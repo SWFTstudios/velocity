@@ -1,0 +1,20 @@
+---
+description: Velocity product context for commuter sleep and transit
+alwaysApply: true
+---
+
+# Velocity (product)
+
+Velocity is a sleep app for **commuters**.
+
+## Core user flows
+
+- User sets a **destination** and a **radius** around it; the app should wake them when they enter that geofence (or equivalent signal), not only at the pin.
+- The app **estimates how long the user can nap** based on route or schedule context and **mode of transportation**: train, car, or bus (different assumptions per mode).
+- Users can review **sleep and transit history** (trips, naps, wake events).
+- **Sleep quantity and quality** combine user-volunteered input with **HealthKit** and data from **third-party health apps** where the user grants access—never assume access; handle denial gracefully.
+
+## Engineering implications
+
+- Treat **location**, **notifications**, and **health** as permission-gated; copy and UX should explain *why* each permission is needed.
+- Prefer **minimum necessary** health data; no sensitive health values in logs, analytics payloads, or crash reports.

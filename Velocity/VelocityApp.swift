@@ -9,9 +9,13 @@ import SwiftUI
 
 @main
 struct VelocityApp: App {
+    @State private var tripSessionStore = TripSessionStore()
+    @State private var userSettingsStore = UserSettingsStore()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainTabView(tripStore: tripSessionStore, settingsStore: userSettingsStore)
+                .preferredColorScheme(userSettingsStore.preferredColorScheme)
         }
     }
 }

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error": "#690005",
+              "on-surface": "#e1e1ef",
+              "secondary-fixed": "#dee0ff",
+              "surface-container-high": "#282933",
+              "on-primary-fixed-variant": "#604100",
+              "inverse-on-surface": "#2e303a",
+              "primary-fixed": "#ffdeac",
+              "background": "#11131c",
+              "secondary": "#bac3ff",
+              "tertiary-container": "#0a161c",
+              "primary": "#ffba38",
+              "on-tertiary-container": "#748188",
+              "on-secondary-fixed-variant": "#2f3f92",
+              "on-secondary-container": "#a3b0ff",
+              "surface-dim": "#11131c",
+              "inverse-primary": "#7e5700",
+              "surface-container-lowest": "#0c0e17",
+              "secondary-fixed-dim": "#bac3ff",
+              "primary-container": "#1f1200",
+              "outline": "#919096",
+              "on-tertiary": "#263238",
+              "on-primary-fixed": "#281900",
+              "surface-bright": "#373943",
+              "surface-container-highest": "#32343e",
+              "on-tertiary-fixed-variant": "#3c494f",
+              "on-background": "#e1e1ef",
+              "surface-variant": "#32343e",
+              "secondary-container": "#2f3f92",
+              "on-tertiary-fixed": "#111d23",
+              "on-secondary": "#15267b",
+              "on-primary": "#432c00",
+              "error": "#ffb4ab",
+              "on-error-container": "#ffdad6",
+              "inverse-surface": "#e1e1ef",
+              "primary-fixed-dim": "#ffba38",
+              "tertiary": "#bbc8d0",
+              "tertiary-fixed-dim": "#bbc8d0",
+              "surface-container": "#1d1f29",
+              "outline-variant": "#46464b",
+              "on-secondary-fixed": "#00105b",
+              "tertiary-fixed": "#d7e4ec",
+              "surface-container-low": "#191b24",
+              "on-primary-container": "#a87500",
+              "surface-tint": "#ffba38",
+              "surface": "#11131c",
+              "on-surface-variant": "#c7c6cc",
+              "error-container": "#93000a"
+            },
+            fontFamily: {
+              "headline": ["Lexend"],
+              "body": ["Lexend"],
+              "label": ["Lexend"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .no-line-rule { border: none !important; }
+      .surface-shift-logic { background-color: rgba(17, 19, 28, 0.6); }
+      .tonal-elevation { background-color: rgba(17, 19, 28, 0.6); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30 min-h-screen pb-40">
+<!-- Top Navigation Anchor -->
+<nav class="fixed top-0 w-full z-50 bg-[#11131c]/60 backdrop-blur-xl flex items-center justify-between px-6 h-16 w-full no-line-rule surface-shift-logic shadow-[0_20px_40px_rgba(17,19,28,0.4)]">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#ffba38] cursor-pointer" data-icon="arrow_back">arrow_back</span>
+<h1 class="font-['Lexend'] text-lg font-medium tracking-tight text-[#ffba38]">Library</h1>
+</div>
+<div class="hidden md:flex items-center gap-8">
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest font-semibold text-[#32343e] hover:text-[#ffba38]/80 transition-all duration-300 cursor-pointer">Journey</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest font-semibold text-[#ffba38] bg-[#1d1f29] rounded-2xl px-4 py-2 cursor-pointer">Library</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest font-semibold text-[#32343e] hover:text-[#ffba38]/80 transition-all duration-300 cursor-pointer">Alarms</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest font-semibold text-[#32343e] hover:text-[#ffba38]/80 transition-all duration-300 cursor-pointer">Settings</span>
+</div>
+<div class="text-xl font-bold text-[#ffba38] tracking-tighter">Sleep Sanctuary</div>
+</nav>
+<main class="pt-24 px-6 max-w-7xl mx-auto space-y-16">
+<!-- Hero Editorial Section -->
+<header class="space-y-4">
+<span class="label-md text-primary uppercase tracking-[0.2em] font-semibold text-xs">Curated Selection</span>
+<h2 class="text-on-surface text-5xl md:text-7xl font-bold tracking-tighter leading-none">Sonic<br/>Architecture</h2>
+<p class="text-on-tertiary-container max-w-md body-lg pt-4 leading-relaxed">Design your environment with high-fidelity soundscapes optimized for deep restoration and REM sleep.</p>
+</header>
+<!-- Category: Nature Sounds (Bento Layout) -->
+<section class="space-y-8">
+<div class="flex items-end justify-between">
+<h3 class="headline-lg text-on-surface font-bold text-3xl tracking-tight">Nature Sounds</h3>
+<span class="text-primary text-sm font-medium hover:underline cursor-pointer">View All</span>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+<!-- Large Feature Card -->
+<div class="md:col-span-8 group relative overflow-hidden rounded-xl bg-surface-container h-[400px] flex flex-col justify-end p-8 transition-transform duration-500 hover:scale-[1.01]">
+<img alt="Rain on window" class="absolute inset-0 w-full h-full object-cover opacity-40 group-hover:opacity-60 transition-opacity duration-700" data-alt="Cinematic macro shot of raindrops on a dark window pane with soft glowing city lights blurred in the background, midnight aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCe3twoFa_aTRs7lRwPd7RT5D-8QSGQAhbxvVaoWVZJcVqnGoF0S1f5Df7BM_Xq9NmetNVyD0_JiP0121KN5boeFwaZTmPGR2ioWuPCXyM8Nck1DTQAVTd_GaMMeAr2caShVh9grnQHYUbv2brJLc70W9qt73ryE3W-_SKzlhXHhuGu1v3a9LBaeMISsgfTMXoxk1Z2Ek7kV0wlxIo0mP5Md6Fd6sQSEfhiTAD2Ml731nBCOnFKIG7xsemdvUmS-8QMx90VFcGH503J"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent"></div>
+<div class="relative z-10 space-y-4">
+<div class="flex items-center gap-3">
+<button class="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-on-primary-container flex items-center justify-center text-on-primary-fixed shadow-2xl transform transition-all active:scale-90">
+<span class="material-symbols-outlined scale-125" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</button>
+<div>
+<h4 class="text-2xl font-bold text-on-surface">Midnight Rainfall</h4>
+<p class="text-on-surface-variant font-medium">45 Minutes • Nature</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Secondary Cards Stack -->
+<div class="md:col-span-4 flex flex-col gap-6">
+<div class="bg-surface-container-high rounded-xl p-6 h-full flex flex-col justify-between group cursor-pointer hover:bg-surface-bright transition-colors">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="waves">waves</span>
+<span class="text-on-tertiary-container text-xs font-semibold">20m</span>
+</div>
+<div>
+<h4 class="text-xl font-bold text-on-surface">Ocean Breath</h4>
+<p class="text-on-tertiary-container body-md">Rhythmic Pacific tides</p>
+</div>
+</div>
+<div class="bg-surface-container-high rounded-xl p-6 h-full flex flex-col justify-between group cursor-pointer hover:bg-surface-bright transition-colors">
+<div class="flex justify-between items-start">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="forest">forest</span>
+<span class="text-on-tertiary-container text-xs font-semibold">60m</span>
+</div>
+<div>
+<h4 class="text-xl font-bold text-on-surface">Distant Thunder</h4>
+<p class="text-on-tertiary-container body-md">Deep forest storm</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Category: White Noise (Horizontal Scroll/Grid) -->
+<section class="space-y-8">
+<h3 class="headline-lg text-on-surface font-bold text-3xl tracking-tight">White Noise</h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 hover:border-primary/40 transition-all cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary" data-icon="air">air</span>
+</div>
+<h5 class="font-bold text-on-surface">Pink Noise</h5>
+<p class="text-on-tertiary-container text-xs mb-4">Steady &amp; Balanced</p>
+<div class="flex items-center justify-between">
+<span class="text-[10px] text-outline font-bold uppercase">Infinite</span>
+<span class="material-symbols-outlined text-primary text-lg" data-icon="play_circle">play_circle</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 hover:border-primary/40 transition-all cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary" data-icon="mode_fan">mode_fan</span>
+</div>
+<h5 class="font-bold text-on-surface">Deep Fan</h5>
+<p class="text-on-tertiary-container text-xs mb-4">Mechanical Hum</p>
+<div class="flex items-center justify-between">
+<span class="text-[10px] text-outline font-bold uppercase">Infinite</span>
+<span class="material-symbols-outlined text-primary text-lg" data-icon="play_circle">play_circle</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 hover:border-primary/40 transition-all cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary" data-icon="flight">flight</span>
+</div>
+<h5 class="font-bold text-on-surface">Cabin Hum</h5>
+<p class="text-on-tertiary-container text-xs mb-4">Low Frequency</p>
+<div class="flex items-center justify-between">
+<span class="text-[10px] text-outline font-bold uppercase">Infinite</span>
+<span class="material-symbols-outlined text-primary text-lg" data-icon="play_circle">play_circle</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-6 rounded-xl border border-outline-variant/10 hover:border-primary/40 transition-all cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mb-6">
+<span class="material-symbols-outlined text-primary" data-icon="coffee">coffee</span>
+</div>
+<h5 class="font-bold text-on-surface">Brown Noise</h5>
+<p class="text-on-tertiary-container text-xs mb-4">Earthly Bass</p>
+<div class="flex items-center justify-between">
+<span class="text-[10px] text-outline font-bold uppercase">Infinite</span>
+<span class="material-symbols-outlined text-primary text-lg" data-icon="play_circle">play_circle</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Category: Guided Meditations (Asymmetric List) -->
+<section class="space-y-8">
+<h3 class="headline-lg text-on-surface font-bold text-3xl tracking-tight">Guided Meditations</h3>
+<div class="space-y-2">
+<!-- Item 1 -->
+<div class="group flex items-center gap-6 p-4 rounded-xl hover:bg-surface-container-low transition-all">
+<div class="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden">
+<img alt="Stars" class="w-full h-full object-cover" data-alt="Night sky with dense stars and nebula in shades of deep indigo and amber, surreal cosmic dreamscape" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcA2klYd38kaUHlZaWkiw_TyCZDTWbpqvBGuptlBdEd7LTRzKLBM9JKtF1IKzD3_yJQ3KaRAecUyaagVO4cNnW9I7HOiz7IHAkAluq3J_82Wh5sGr6PodVg_SFZh41vwJszN2XyEq1Xpkp9r73U5B5HWqNF35nKYiScFVfJck2AunKJ5EXPvL_fyj6LVAJHjfLAdDy2V0qTgdF7y0ag4tg5PL25iTTMx_pcGZGwRTLmegsQ3g9EtilaHH2spJeU8QAX4B_CxMw_R2Z"/>
+<div class="absolute inset-0 flex items-center justify-center bg-surface-container-lowest/40 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="flex-grow">
+<h6 class="font-bold text-lg text-on-surface">Neural Decompression</h6>
+<p class="text-on-tertiary-container text-sm">Narrated by Dr. Elena Thorne</p>
+</div>
+<div class="text-right">
+<span class="text-primary font-bold text-sm">12:00</span>
+<p class="text-outline text-[10px] uppercase font-bold tracking-tighter">Mindfulness</p>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="group flex items-center gap-6 p-4 rounded-xl hover:bg-surface-container-low transition-all">
+<div class="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden">
+<img alt="Abstract light" class="w-full h-full object-cover" data-alt="Soft ethereal light leaking through translucent fabric, warm amber glow, peaceful zen atmosphere" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBORu7_guhZOxuKwADHuwBda6ItzK1_upM-AeE2sNalloy8648PsjS49bu3IlAAaZUHxfn1Wvu2jug6AKhWJ4gpkqOw7xy3hFYvBoBCEMlghOApGEtOLCeZyNDmRK4LynPmm9hg7hU8GvwRmzhhP3GmQe7pQPI7_kHJskjfnFamyndBkdgR0U42Z7gTGo1NRS7kz5CcdJQocLv4K6HczdhYB3vrLhG3gUIAvWcy8jGxwtvPXmquZfvBAmqLDL0o2D_GZrtNU78bX7OV"/>
+<div class="absolute inset-0 flex items-center justify-center bg-surface-container-lowest/40 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="flex-grow">
+<h6 class="font-bold text-lg text-on-surface">The Weightless Room</h6>
+<p class="text-on-tertiary-container text-sm">Narrated by Julian Rivers</p>
+</div>
+<div class="text-right">
+<span class="text-primary font-bold text-sm">25:40</span>
+<p class="text-outline text-[10px] uppercase font-bold tracking-tighter">Sleep Story</p>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="group flex items-center gap-6 p-4 rounded-xl hover:bg-surface-container-low transition-all">
+<div class="relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden">
+<img alt="Forest" class="w-full h-full object-crop" data-alt="Deep misty forest at twilight, silhouettes of pine trees against a dark navy sky, mysterious and calming" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBWpyAiFxbyXUrAdUTtsACczyk45h9zimwvK-f5N7qc_UGuCAve0RFfslNNMTJ-UNPZg7-R79P3VJy1i99afIqMfnBWpHywTPGXWLUh65ky2_Jh6tdqO6TMRmM6lfI8qIV30LZSdI1WrfzKsJAHx6-nvDtY2zhTYlm-vjXxj8CBheoEkeOsR3r3hiS8Gsd3xaQOgrKQFsi1YGAZMIgNZZtTbO_wkjJvUj4oIKMLtl9g6bwS8edkTw2XOgA31mstHs93-5caAey0_a2j"/>
+<div class="absolute inset-0 flex items-center justify-center bg-surface-container-lowest/40 opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-primary" data-icon="play_arrow" style="font-variation-settings: 'FILL' 1;">play_arrow</span>
+</div>
+</div>
+<div class="flex-grow">
+<h6 class="font-bold text-lg text-on-surface">Circadian Alignment</h6>
+<p class="text-on-tertiary-container text-sm">Narrated by Dr. Elena Thorne</p>
+</div>
+<div class="text-right">
+<span class="text-primary font-bold text-sm">18:15</span>
+<p class="text-outline text-[10px] uppercase font-bold tracking-tighter">Science</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Now Playing Mini Player (Selected State) -->
+<div class="fixed bottom-24 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-2xl z-50">
+<div class="bg-surface-bright/80 backdrop-blur-2xl rounded-2xl p-4 flex items-center justify-between shadow-[0_20px_40px_rgba(17,19,28,0.6)]">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-xl overflow-hidden shadow-lg border border-primary/20">
+<img alt="Now Playing" class="w-full h-full object-cover" data-alt="Small thumbnail of raindrops on glass with dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPTV3zvf4VXog1Y8xe3L5zxcN5Tz3ArByeQ2TFI6Ror2su3ikQJdM-xNOdeVHZUYbUoITiDoKWNb80_HwVjiaJazcMizXFow2_cibqc6HPZhfPtak24c6hq7tgtuQgY85iAoa6F-xpVsVu1xU837WY4AXKg_ybE6GcfJ9UnZj08QxUqaBNl7vKBdsuPALwvFDFSYbi4pu0N0poHbIDJprwhoEbmmQojBdngqDrIR_KUdKFyHBLRvFcQyL0qmsJcUuPOFiZW7XURBYD"/>
+</div>
+<div>
+<h6 class="text-on-surface font-bold text-sm leading-none">Midnight Rainfall</h6>
+<p class="text-primary text-[10px] font-bold uppercase tracking-wider mt-1">Playing Now</p>
+</div>
+</div>
+<div class="flex items-center gap-6 pr-2">
+<button class="material-symbols-outlined text-on-surface-variant hover:text-primary transition-colors" data-icon="timer">timer</button>
+<button class="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-on-primary shadow-lg shadow-primary/20 transform transition-all active:scale-90">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">pause</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 bg-[#11131c]/60 backdrop-blur-xl z-50 rounded-t-3xl no-line-rule tonal-elevation shadow-[0_-10px_30px_rgba(12,14,23,0.8)]">
+<div class="flex flex-col items-center justify-center text-[#32343e] px-4 py-2 hover:text-[#ffba38]/80 transition-all duration-300 transform active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined text-2xl" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest font-semibold mt-1">Journey</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#ffba38] bg-[#1d1f29] rounded-2xl px-4 py-2 transform active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined text-2xl" data-icon="subscriptions" style="font-variation-settings: 'FILL' 1;">subscriptions</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest font-semibold mt-1">Library</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#32343e] px-4 py-2 hover:text-[#ffba38]/80 transition-all duration-300 transform active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined text-2xl" data-icon="alarm">alarm</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest font-semibold mt-1">Alarms</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#32343e] px-4 py-2 hover:text-[#ffba38]/80 transition-all duration-300 transform active:scale-90 cursor-pointer">
+<span class="material-symbols-outlined text-2xl" data-icon="settings">settings</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest font-semibold mt-1">Settings</span>
+</div>
+</nav>
+</body></html>

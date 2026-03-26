@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#ffba38",
+            "surface-bright": "#373943",
+            "primary-fixed-dim": "#ffba38",
+            "secondary-fixed": "#dee0ff",
+            "primary-fixed": "#ffdeac",
+            "error": "#ffb4ab",
+            "surface-tint": "#ffba38",
+            "on-primary-container": "#a87500",
+            "on-background": "#e1e1ef",
+            "inverse-on-surface": "#2e303a",
+            "on-tertiary-container": "#748188",
+            "surface-container-lowest": "#0c0e17",
+            "on-primary-fixed": "#281900",
+            "outline": "#919096",
+            "on-secondary-fixed-variant": "#2f3f92",
+            "on-primary-fixed-variant": "#604100",
+            "primary-container": "#1f1200",
+            "outline-variant": "#46464b",
+            "background": "#11131c",
+            "secondary-container": "#2f3f92",
+            "on-tertiary": "#263238",
+            "tertiary": "#bbc8d0",
+            "tertiary-fixed": "#d7e4ec",
+            "on-surface-variant": "#c7c6cc",
+            "surface-dim": "#11131c",
+            "on-secondary": "#15267b",
+            "on-error-container": "#ffdad6",
+            "on-secondary-container": "#a3b0ff",
+            "on-secondary-fixed": "#00105b",
+            "surface-container": "#1d1f29",
+            "on-primary": "#432c00",
+            "tertiary-container": "#0a161c",
+            "on-surface": "#e1e1ef",
+            "inverse-primary": "#7e5700",
+            "surface-container-high": "#282933",
+            "error-container": "#93000a",
+            "tertiary-fixed-dim": "#bbc8d0",
+            "surface-container-highest": "#32343e",
+            "on-tertiary-fixed": "#111d23",
+            "on-tertiary-fixed-variant": "#3c494f",
+            "surface-container-low": "#191b24",
+            "secondary": "#bac3ff",
+            "inverse-surface": "#e1e1ef",
+            "surface-variant": "#32343e",
+            "surface": "#11131c",
+            "on-error": "#690005"
+          },
+          fontFamily: {
+            "headline": ["Lexend"],
+            "body": ["Lexend"],
+            "label": ["Lexend"]
+          },
+          borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "9999px"},
+        },
+      },
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    }
+    .amber-pulse-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .pulse-ring {
+      position: absolute;
+      border-radius: 50%;
+      background: #ffba38;
+      opacity: 0.15;
+      width: 100%;
+      height: 100%;
+    }
+    .asymmetric-layout {
+      grid-template-columns: 1.2fr 0.8fr;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-lowest text-on-surface font-body min-h-screen selection:bg-primary selection:text-on-primary">
+<main class="relative flex flex-col items-center justify-center min-h-screen px-6 py-12 overflow-hidden">
+<div class="absolute inset-0 z-0 opacity-20 pointer-events-none" style="background-image: radial-gradient(circle at 50% 50%, #ffba38 0%, transparent 70%);">
+</div>
+<div class="z-10 w-full max-w-lg flex flex-col items-center gap-12 text-center">
+<div class="amber-pulse-container w-64 h-64 md:w-80 md:h-80">
+<div class="pulse-ring scale-[1.2] opacity-5"></div>
+<div class="pulse-ring scale-[1.0] opacity-10"></div>
+<div class="pulse-ring scale-[0.8] opacity-20"></div>
+<div class="relative z-20 flex flex-col items-center">
+<span class="material-symbols-outlined text-primary text-6xl md:text-7xl mb-4" data-icon="notifications_active" style="font-variation-settings: 'FILL' 1;">notifications_active</span>
+<span class="font-label text-primary tracking-[0.2em] text-sm uppercase">Wake Up Sequence</span>
+</div>
+</div>
+<div class="space-y-4">
+<h1 class="font-headline text-on-surface text-4xl md:text-6xl font-bold tracking-tight leading-tight">
+          Approaching Destination
+        </h1>
+<p class="text-secondary text-lg md:text-xl font-light opacity-80">
+          Your journey is concluding in approximately <span class="text-primary font-medium">4 minutes</span>.
+        </p>
+</div>
+<div class="w-full grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+<div class="bg-surface-container p-6 rounded-xl flex items-center gap-4 group hover:bg-surface-container-highest transition-colors duration-300">
+<div class="bg-surface-container-highest p-3 rounded-full text-primary">
+<span class="material-symbols-outlined" data-icon="location_on">location_on</span>
+</div>
+<div>
+<div class="text-on-tertiary-container text-xs uppercase tracking-widest font-label mb-1">Current Location</div>
+<div class="text-on-surface font-medium">Grand Central District</div>
+</div>
+</div>
+<div class="bg-surface-container p-6 rounded-xl flex items-center gap-4 group hover:bg-surface-container-highest transition-colors duration-300">
+<div class="bg-surface-container-highest p-3 rounded-full text-primary">
+<span class="material-symbols-outlined" data-icon="schedule">schedule</span>
+</div>
+<div>
+<div class="text-on-tertiary-container text-xs uppercase tracking-widest font-label mb-1">ETA</div>
+<div class="text-on-surface font-medium">06:42 AM</div>
+</div>
+</div>
+</div>
+<div class="w-full mt-4 space-y-6">
+<button class="w-full py-6 rounded-full bg-gradient-to-br from-primary to-on-primary-container text-on-primary-fixed font-headline text-2xl font-bold tracking-tight shadow-[0_20px_40px_rgba(17,19,28,0.4)] active:scale-95 transition-transform duration-150">
+          I'm Awake
+        </button>
+<button class="w-full py-4 rounded-full border border-outline-variant/20 text-on-surface-variant font-label text-sm uppercase tracking-widest hover:bg-surface-container transition-colors">
+          Snooze (2 mins)
+        </button>
+</div>
+</div>
+<div class="fixed bottom-0 left-0 w-full p-8 flex justify-center z-50 pointer-events-none">
+<div class="max-w-xl w-full flex items-center justify-between pointer-events-auto">
+<div class="flex items-center gap-3">
+<img alt="User Profile" class="w-10 h-10 rounded-full object-cover border-2 border-primary/20" data-alt="Close up portrait of a relaxed person waking up with soft morning light filtering through a window in the background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBM7XdfaW9yf0AfREtZ-U8yNn_FUJ6jHv4PQt_y_OrFBQxJ6eC6gk1Y1_UV_zTtl94Y0msTB8dUljC5ZXrnyCMlV4o6NAnRqydXJCGg_MnsjzCuN9apqdjoagvz46Jn73i4mF0ept0guOSCae5HmrOg8LlaaWZ0F99AkZ953e2_CcAuXmEI7XLMvcmMFtMze6Wu50NP_daE1LTtmqDtZ_jo35rO3uHGNi3kykhJggOtXMPzw9Iyb3EZ_kz4OV5BdjRWF9oZrBElzbPB"/>
+<span class="text-on-surface font-headline font-bold italic tracking-tighter text-xl text-primary">SleepJourney</span>
+</div>
+<div class="bg-surface-container/60 backdrop-blur-xl px-4 py-2 rounded-full border border-outline-variant/10">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="text-[10px] font-label uppercase tracking-widest text-primary">Tracking Active</span>
+</div>
+</div>
+</div>
+</div>
+<div class="absolute inset-0 -z-10 opacity-40">
+<div class="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-[120px]"></div>
+<div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-[120px]"></div>
+</div>
+</main>
+<div class="fixed top-0 left-0 w-full h-1 bg-surface-container-highest z-[60]">
+<div class="h-full bg-primary transition-all duration-1000 ease-linear" style="width: 85%;"></div>
+</div>
+</body></html>

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Midnight Journey - Sleep Map</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface-container-low": "#191b24",
+              "secondary": "#bac3ff",
+              "inverse-on-surface": "#2e303a",
+              "surface-container": "#1d1f29",
+              "on-primary": "#432c00",
+              "on-primary-fixed": "#281900",
+              "inverse-surface": "#e1e1ef",
+              "on-secondary-fixed": "#00105b",
+              "error": "#ffb4ab",
+              "tertiary": "#bbc8d0",
+              "on-error-container": "#ffdad6",
+              "tertiary-container": "#0a161c",
+              "surface-dim": "#11131c",
+              "on-primary-fixed-variant": "#604100",
+              "surface-variant": "#32343e",
+              "surface": "#11131c",
+              "secondary-fixed-dim": "#bac3ff",
+              "surface-container-lowest": "#0c0e17",
+              "primary-fixed": "#ffdeac",
+              "on-tertiary": "#263238",
+              "primary-fixed-dim": "#ffba38",
+              "tertiary-fixed": "#d7e4ec",
+              "secondary-container": "#2f3f92",
+              "on-tertiary-fixed-variant": "#3c494f",
+              "on-tertiary-fixed": "#111d23",
+              "background": "#11131c",
+              "surface-container-highest": "#32343e",
+              "on-error": "#690005",
+              "on-primary-container": "#a87500",
+              "outline-variant": "#46464b",
+              "on-secondary-fixed-variant": "#2f3f92",
+              "on-background": "#e1e1ef",
+              "on-secondary": "#15267b",
+              "surface-container-high": "#282933",
+              "inverse-primary": "#7e5700",
+              "error-container": "#93000a",
+              "secondary-fixed": "#dee0ff",
+              "primary": "#ffba38",
+              "outline": "#919096",
+              "on-surface": "#e1e1ef",
+              "primary-container": "#1f1200",
+              "on-tertiary-container": "#748188",
+              "on-surface-variant": "#c7c6cc",
+              "surface-tint": "#ffba38",
+              "surface-bright": "#373943",
+              "on-secondary-container": "#a3b0ff",
+              "tertiary-fixed-dim": "#bbc8d0"
+            },
+            fontFamily: {
+              "headline": ["Lexend"],
+              "body": ["Lexend"],
+              "label": ["Lexend"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .map-gradient-overlay {
+            background: radial-gradient(circle at center, transparent 0%, #11131c 90%);
+        }
+        .glow-dot {
+            box-shadow: 0 0 20px #ffba38;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body overflow-hidden">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-slate-900/60 backdrop-blur-xl shadow-[0_20px_40px_rgba(17,19,28,0.4)] flex items-center justify-between px-6 h-16 w-full">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-amber-400">bedtime</span>
+<h1 class="font-['Lexend'] tracking-tight text-xl font-bold text-slate-100">Midnight Journey</h1>
+</div>
+<button class="text-slate-400 hover:bg-slate-800/50 transition-colors duration-300 p-2 rounded-full active:scale-95">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</header>
+<!-- Main Map Canvas -->
+<main class="relative h-screen w-full bg-surface-container-lowest overflow-hidden">
+<!-- Map Placeholder -->
+<div class="absolute inset-0 z-0">
+<img alt="Dark mode stylized map of London streets" class="w-full h-full object-cover opacity-40 grayscale contrast-125" data-alt="A dark charcoal and amber stylized satellite view of city streets at night with minimal lighting and deep shadows" data-location="London" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYOrQfWmi-rG6zie6s82OI7Y5YMfq39Jul0vKdS2L6FSP--uc7C68_ckciNEurifFE9L6WANYGvnBxg8QRwnSgX19Abw53z454Bcqw54EtCGv46IFBG2KYAtLfv8tgEwGzWWKEbOQhLzFUZrxOjEoWKB4nOJcOipIkme9FXAkpjJ024SeWL9x2DQfVpwCmQZsmjpnn0rYBQ0LoQb4zSMSBmlz72mUZq141beYDDos-0wjUuVTvYHGdYfi2i-4Dk6D7WMFxieXG_e2m"/>
+<div class="absolute inset-0 map-gradient-overlay pointer-events-none"></div>
+</div>
+<!-- Route Visualization Layer -->
+<svg class="absolute inset-0 z-10 w-full h-full pointer-events-none" preserveaspectratio="xMidYMid slice" viewbox="0 0 400 800">
+<!-- The Route Line -->
+<path d="M 100 700 Q 150 550 250 450 T 300 200" fill="none" opacity="0.6" stroke="#ffba38" stroke-dasharray="8 8" stroke-width="4"></path>
+<!-- Wake-up Threshold Zone -->
+<circle cx="300" cy="200" fill="#ffba38" fill-opacity="0.08" r="80" stroke="#ffba38" stroke-dasharray="4 4" stroke-width="1"></circle>
+<!-- Current Location Dot -->
+<circle class="glow-dot" cx="100" cy="700" fill="#ffba38" r="8"></circle>
+<circle cx="100" cy="700" fill="#ffba38" fill-opacity="0.2" r="16"></circle>
+<!-- Destination Pin Marker -->
+<g transform="translate(288, 170)">
+<path d="M12 0c-6.627 0-12 5.373-12 12 0 9 12 20 12 20s12-11 12-20c0-6.627-5.373-12-12-12zm0 18c-3.314 0-6-2.686-6-6s2.686-6 6-6 6 2.686 6 6-2.686 6-6 6z" fill="#ffba38"></path>
+</g>
+</svg>
+<!-- Floating UI Elements -->
+<div class="absolute inset-0 z-20 flex flex-col items-center justify-between p-6 pt-24 pb-32">
+<!-- Status Card -->
+<div class="w-full max-w-md bg-surface-container/80 backdrop-blur-xl p-6 rounded-3xl shadow-[0_20px_40px_rgba(17,19,28,0.4)] border border-outline-variant/10">
+<div class="flex justify-between items-start mb-4">
+<div>
+<span class="text-primary font-label text-xs uppercase tracking-widest mb-1 block">Next Stop</span>
+<h2 class="text-on-surface font-headline text-2xl font-bold">St. Pancras</h2>
+</div>
+<div class="bg-surface-container-highest px-3 py-1 rounded-full">
+<span class="text-secondary font-label text-xs">ON TRACK</span>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-4 rounded-2xl">
+<span class="material-symbols-outlined text-primary mb-2">schedule</span>
+<div class="text-on-surface-variant text-xs mb-1">ETA</div>
+<div class="text-on-surface font-bold text-lg">06:45 AM</div>
+</div>
+<div class="bg-surface-container-low p-4 rounded-2xl">
+<span class="material-symbols-outlined text-primary mb-2">straighten</span>
+<div class="text-on-surface-variant text-xs mb-1">Distance</div>
+<div class="text-on-surface font-bold text-lg">12.4 km</div>
+</div>
+</div>
+</div>
+<!-- Contextual Threshold Indicator -->
+<div class="flex flex-col items-center gap-4">
+<div class="bg-surface-container-highest/60 backdrop-blur-md px-4 py-2 rounded-full border border-primary/20 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-sm" style="font-variation-settings: 'FILL' 1;">notifications_active</span>
+<span class="text-on-surface text-sm font-medium">Wake-up at 5km radius</span>
+</div>
+</div>
+<!-- Bottom Controls -->
+<div class="w-full max-w-md grid grid-cols-2 gap-4">
+<button class="h-16 rounded-2xl bg-surface-container-highest border border-outline-variant/20 flex items-center justify-center gap-2 text-on-surface font-bold hover:bg-surface-bright transition-all active:scale-95">
+<span class="material-symbols-outlined">pause_circle</span>
+                    Pause Trip
+                </button>
+<button class="h-16 rounded-2xl bg-gradient-to-tr from-amber-500 to-amber-700 text-on-primary-fixed flex items-center justify-center gap-2 font-bold shadow-lg active:scale-95 transition-all">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">stop_circle</span>
+                    End Trip
+                </button>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-3xl bg-slate-900/60 backdrop-blur-xl shadow-[0_-10px_40px_rgba(17,19,28,0.6)] flex justify-around items-center w-full px-4 pb-6 pt-3">
+<a class="flex flex-col items-center justify-center text-slate-400 px-5 py-2 hover:text-amber-200 transition-all duration-300 active:scale-90" href="#">
+<span class="material-symbols-outlined">nightlight_round</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest mt-1">Rest</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-gradient-to-tr from-amber-500 to-amber-700 text-slate-900 rounded-2xl px-5 py-2 active:scale-90 duration-300" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">map</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest mt-1">Journey</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-5 py-2 hover:text-amber-200 transition-all duration-300 active:scale-90" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest mt-1">Dream</span>
+</a>
+<a class="flex flex-col items-center justify-center text-slate-400 px-5 py-2 hover:text-amber-200 transition-all duration-300 active:scale-90" href="#">
+<span class="material-symbols-outlined">person_2</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest mt-1">Profile</span>
+</a>
+</nav>
+</body></html>

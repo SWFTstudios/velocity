@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Settings - Sleep Sanctuary</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-error": "#690005",
+              "on-surface": "#e1e1ef",
+              "secondary-fixed": "#dee0ff",
+              "surface-container-high": "#282933",
+              "on-primary-fixed-variant": "#604100",
+              "inverse-on-surface": "#2e303a",
+              "primary-fixed": "#ffdeac",
+              "background": "#11131c",
+              "secondary": "#bac3ff",
+              "tertiary-container": "#0a161c",
+              "primary": "#ffba38",
+              "on-tertiary-container": "#748188",
+              "on-secondary-fixed-variant": "#2f3f92",
+              "on-secondary-container": "#a3b0ff",
+              "surface-dim": "#11131c",
+              "inverse-primary": "#7e5700",
+              "surface-container-lowest": "#0c0e17",
+              "secondary-fixed-dim": "#bac3ff",
+              "primary-container": "#1f1200",
+              "outline": "#919096",
+              "on-tertiary": "#263238",
+              "on-primary-fixed": "#281900",
+              "surface-bright": "#373943",
+              "surface-container-highest": "#32343e",
+              "on-tertiary-fixed-variant": "#3c494f",
+              "on-background": "#e1e1ef",
+              "surface-variant": "#32343e",
+              "secondary-container": "#2f3f92",
+              "on-tertiary-fixed": "#111d23",
+              "on-secondary": "#15267b",
+              "on-primary": "#432c00",
+              "error": "#ffb4ab",
+              "on-error-container": "#ffdad6",
+              "inverse-surface": "#e1e1ef",
+              "primary-fixed-dim": "#ffba38",
+              "tertiary": "#bbc8d0",
+              "tertiary-fixed-dim": "#bbc8d0",
+              "surface-container": "#1d1f29",
+              "outline-variant": "#46464b",
+              "on-secondary-fixed": "#00105b",
+              "tertiary-fixed": "#d7e4ec",
+              "surface-container-low": "#191b24",
+              "on-primary-container": "#a87500",
+              "surface-tint": "#ffba38",
+              "surface": "#11131c",
+              "on-surface-variant": "#c7c6cc",
+              "error-container": "#93000a"
+            },
+            fontFamily: {
+              "headline": ["Lexend"],
+              "body": ["Lexend"],
+              "label": ["Lexend"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      .surface-shift-logic {
+        background-color: rgba(17, 19, 28, 0.6);
+        backdrop-filter: blur(20px);
+      }
+      .no-line-rule {
+        border: none !important;
+      }
+      body {
+        background-color: #11131c;
+        color: #e1e1ef;
+        font-family: 'Lexend', sans-serif;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-[#11131c]/60 backdrop-blur-xl shadow-[0_20px_40px_rgba(17,19,28,0.4)] no-line-rule">
+<div class="flex items-center justify-between px-6 h-16 w-full">
+<div class="flex items-center gap-4">
+<button class="text-[#ffba38] scale-95 active:duration-150 transition-colors duration-300 hover:bg-[#1d1f29] p-2 rounded-full">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-['Lexend'] text-lg font-medium tracking-tight text-[#ffba38]">Settings</h1>
+</div>
+<div class="text-xl font-bold text-[#ffba38] tracking-tighter">Sleep Sanctuary</div>
+</div>
+</header>
+<main class="pt-24 px-6 max-w-2xl mx-auto space-y-12">
+<!-- Profile Section: Bento Style -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="md:col-span-2 bg-surface-container rounded-xl p-8 flex items-center gap-6 shadow-[0_20px_40px_rgba(17,19,28,0.4)]">
+<div class="relative">
+<div class="w-20 h-20 rounded-full overflow-hidden ring-2 ring-primary ring-offset-4 ring-offset-surface-container">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="Close up portrait of a serene woman with eyes closed, soft amber lighting hitting her face, dark moody background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCxaSu3zG1vaCBxgs6hjp0fmViaXVUVPplQjgxJgAkS5Y7kdr4e6ipoo_xrCS7sy8H6bN8oBkKnoVr22qEM14rgvxT1OK_c00HoNwKLKHGyPJaq6k6NlMxVRhVO0Q9S6TnON3c73ruGdNpMGW-y7fn2w8Otx4oiHyH3AJ_dfso0_NHMcLhOBpTor71tyNcQ4bFVqx0DnHrqhAEZLB-B5dQLboyYkpkJ58OGIvUKfM_nRSsN8ns_-2Kb6jJQkeE7zjEDzKsuR1ulhCvP"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-primary text-on-primary-fixed p-1.5 rounded-full shadow-lg">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">edit</span>
+</div>
+</div>
+<div>
+<p class="text-primary text-[10px] uppercase tracking-widest font-semibold mb-1">Premium Member</p>
+<h2 class="text-2xl font-bold text-on-surface tracking-tight">Elena Thorne</h2>
+<p class="text-on-tertiary-container text-sm">Resting since Oct 2023</p>
+</div>
+</div>
+<div class="bg-primary bg-gradient-to-br from-primary to-on-primary-container rounded-xl p-6 flex flex-col justify-between text-on-primary-fixed">
+<span class="material-symbols-outlined text-3xl">bedtime</span>
+<div>
+<p class="text-3xl font-extrabold tracking-tighter">8.4h</p>
+<p class="text-[10px] uppercase font-bold opacity-80">Avg. Sleep</p>
+</div>
+</div>
+</section>
+<!-- App Preferences -->
+<section class="space-y-6">
+<h3 class="text-primary text-[10px] uppercase tracking-widest font-semibold px-2">App Preferences</h3>
+<div class="bg-surface-container rounded-xl overflow-hidden shadow-[0_20px_40px_rgba(17,19,28,0.4)]">
+<!-- Notifications -->
+<div class="flex items-center justify-between p-5 hover:bg-surface-container-high transition-colors duration-300">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">notifications_active</span>
+</div>
+<div>
+<p class="text-on-surface font-medium">Notifications</p>
+<p class="text-on-tertiary-container text-xs">Smart wake-up &amp; reminders</p>
+</div>
+</div>
+<div class="w-12 h-6 bg-primary/20 rounded-full relative flex items-center px-1">
+<div class="w-4 h-4 bg-primary rounded-full shadow-md translate-x-6"></div>
+</div>
+</div>
+<!-- Quiet Mode -->
+<div class="flex items-center justify-between p-5 hover:bg-surface-container-high transition-colors duration-300 border-t border-outline-variant/10">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">do_not_disturb_on</span>
+</div>
+<div>
+<p class="text-on-surface font-medium">Quiet Mode</p>
+<p class="text-on-tertiary-container text-xs">Silence all but emergency alarms</p>
+</div>
+</div>
+<div class="w-12 h-6 bg-surface-container-highest rounded-full relative flex items-center px-1">
+<div class="w-4 h-4 bg-on-surface-variant rounded-full shadow-md"></div>
+</div>
+</div>
+<!-- Theme -->
+<div class="flex items-center justify-between p-5 hover:bg-surface-container-high transition-colors duration-300 border-t border-outline-variant/10">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">dark_mode</span>
+</div>
+<div>
+<p class="text-on-surface font-medium">Theme</p>
+<p class="text-on-tertiary-container text-xs">Midnight Calm (Default)</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-tertiary-container">chevron_right</span>
+</div>
+</div>
+</section>
+<!-- Navigation Units: Asymmetric Cards -->
+<section class="space-y-6">
+<h3 class="text-primary text-[10px] uppercase tracking-widest font-semibold px-2">Journey Metrics</h3>
+<div class="flex flex-col md:flex-row gap-4">
+<div class="flex-1 bg-surface-container-low p-6 rounded-xl border border-outline-variant/5">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-primary">timer</span>
+<div class="w-4 h-4 rounded-full border-2 border-primary bg-primary"></div>
+</div>
+<p class="text-on-surface font-semibold mb-1">Time Priority</p>
+<p class="text-on-tertiary-container text-xs">Journeys calculated by REM cycles</p>
+</div>
+<div class="flex-1 bg-surface-container p-6 rounded-xl border border-outline-variant/5">
+<div class="flex items-center justify-between mb-4">
+<span class="material-symbols-outlined text-on-tertiary-container">straighten</span>
+<div class="w-4 h-4 rounded-full border-2 border-outline-variant"></div>
+</div>
+<p class="text-on-surface font-semibold mb-1">Distance Units</p>
+<p class="text-on-tertiary-container text-xs">Kilometers vs Miles for walk-tracking</p>
+</div>
+</div>
+</section>
+<!-- Help & Support -->
+<section class="space-y-6">
+<h3 class="text-primary text-[10px] uppercase tracking-widest font-semibold px-2">Support</h3>
+<div class="bg-surface-container rounded-xl overflow-hidden shadow-[0_20px_40px_rgba(17,19,28,0.4)]">
+<a class="flex items-center gap-4 p-5 hover:bg-surface-container-high transition-colors duration-300" href="#">
+<span class="material-symbols-outlined text-secondary">help</span>
+<span class="text-on-surface flex-1">Help Center</span>
+<span class="material-symbols-outlined text-on-tertiary-container">open_in_new</span>
+</a>
+<a class="flex items-center gap-4 p-5 hover:bg-surface-container-high transition-colors duration-300 border-t border-outline-variant/10" href="#">
+<span class="material-symbols-outlined text-secondary">shield</span>
+<span class="text-on-surface flex-1">Privacy Policy</span>
+<span class="material-symbols-outlined text-on-tertiary-container">chevron_right</span>
+</a>
+<a class="flex items-center gap-4 p-5 hover:bg-surface-container-high transition-colors duration-300 border-t border-outline-variant/10" href="#">
+<span class="material-symbols-outlined text-error">logout</span>
+<span class="text-error flex-1">Sign Out</span>
+</a>
+</div>
+</section>
+<!-- Version Info -->
+<div class="text-center py-8">
+<p class="text-[10px] uppercase tracking-[0.2em] text-on-tertiary-container">Sleep Sanctuary v4.2.0-Midnight</p>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 bg-[#11131c]/60 backdrop-blur-xl rounded-t-3xl shadow-[0_-10px_30px_rgba(12,14,23,0.8)] no-line-rule z-50">
+<a class="flex flex-col items-center justify-center text-[#32343e] px-4 py-2 hover:text-[#ffba38]/80 transition-all duration-300 ease-out transform active:scale-90" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest font-semibold mt-1">Journey</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#32343e] px-4 py-2 hover:text-[#ffba38]/80 transition-all duration-300 ease-out transform active:scale-90" href="#">
+<span class="material-symbols-outlined">subscriptions</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest font-semibold mt-1">Library</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#32343e] px-4 py-2 hover:text-[#ffba38]/80 transition-all duration-300 ease-out transform active:scale-90" href="#">
+<span class="material-symbols-outlined">alarm</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest font-semibold mt-1">Alarms</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#ffba38] bg-[#1d1f29] rounded-2xl px-4 py-2 transition-all duration-300 ease-out transform active:scale-90" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">settings</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-widest font-semibold mt-1">Settings</span>
+</a>
+</nav>
+</body></html>

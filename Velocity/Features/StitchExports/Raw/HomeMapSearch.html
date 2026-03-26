@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-tertiary-container": "#748188",
+              "on-primary-fixed-variant": "#604100",
+              "surface-container": "#1d1f29",
+              "primary-container": "#1f1200",
+              "on-secondary-container": "#a3b0ff",
+              "surface-bright": "#373943",
+              "on-secondary-fixed": "#00105b",
+              "on-background": "#e1e1ef",
+              "tertiary-container": "#0a161c",
+              "surface-tint": "#ffba38",
+              "primary-fixed": "#ffdeac",
+              "on-primary-container": "#a87500",
+              "secondary-fixed-dim": "#bac3ff",
+              "error": "#ffb4ab",
+              "secondary-fixed": "#dee0ff",
+              "on-surface": "#e1e1ef",
+              "on-error-container": "#ffdad6",
+              "tertiary": "#bbc8d0",
+              "surface-variant": "#32343e",
+              "secondary": "#bac3ff",
+              "on-surface-variant": "#c7c6cc",
+              "on-tertiary-fixed": "#111d23",
+              "surface-container-lowest": "#0c0e17",
+              "outline": "#919096",
+              "error-container": "#93000a",
+              "primary": "#ffba38",
+              "inverse-primary": "#7e5700",
+              "surface-container-high": "#282933",
+              "primary-fixed-dim": "#ffba38",
+              "surface": "#11131c",
+              "on-secondary": "#15267b",
+              "inverse-on-surface": "#2e303a",
+              "tertiary-fixed-dim": "#bbc8d0",
+              "outline-variant": "#46464b",
+              "surface-dim": "#11131c",
+              "inverse-surface": "#e1e1ef",
+              "surface-container-highest": "#32343e",
+              "on-tertiary": "#263238",
+              "surface-container-low": "#191b24",
+              "on-primary": "#432c00",
+              "tertiary-fixed": "#d7e4ec",
+              "on-error": "#690005",
+              "on-primary-fixed": "#281900",
+              "on-tertiary-fixed-variant": "#3c494f",
+              "on-secondary-fixed-variant": "#2f3f92",
+              "background": "#11131c",
+              "secondary-container": "#2f3f92"
+            },
+            fontFamily: {
+              "headline": ["Lexend"],
+              "body": ["Lexend"],
+              "label": ["Lexend"]
+            },
+            borderRadius: {"DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            line-height: 1;
+            text-transform: none;
+            letter-spacing: normal;
+            word-wrap: normal;
+            white-space: nowrap;
+            direction: ltr;
+        }
+        body { font-family: 'Lexend', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface-container-lowest text-on-surface selection:bg-primary selection:text-on-primary">
+<!-- Background Map Layer -->
+<div class="fixed inset-0 z-0">
+<img class="w-full h-full object-cover opacity-40 mix-blend-luminosity grayscale contrast-125" data-alt="Dark aesthetic night-mode city map with high contrast roads in charcoal and subtle amber street highlights on a deep navy base" data-location="San Francisco" src="https://lh3.googleusercontent.com/aida-public/AB6AXuApRTbSTky9en46XvZ0nDJonl-EVrBSBNp_Ot5EdNrn3m39c9nlhBdCOVdBJ2mw46eB6S9OeMusvKclPIgMZCn6pw_PZlht_-7WvC6bTACfzL603OXxamPq5DpyBQ-LGpSkXvARTxmwr29BKecnLixHNt7NvDbzoBi_h2Vp6SZCfpIYR2erdbKjBVFGIuFbsBLTVb5s8Z2L_-boLYhJq8gDne5Q6LRC2-mP8FqzduwxCzOcBFbVeY6VhFkuHocnDciedUWAewgSyQ6t"/>
+<!-- Overlay Gradient for Depth -->
+<div class="absolute inset-0 bg-gradient-to-t from-surface-container-lowest via-transparent to-surface-container-lowest opacity-80"></div>
+</div>
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-transparent backdrop-blur-md dark:bg-opacity-60 flex items-center justify-between px-6 py-4">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-amber-400 dark:text-amber-300" data-icon="nights_stay">nights_stay</span>
+<h1 class="text-xl font-bold tracking-tight text-amber-400 font-lexend">Midnight Calm</h1>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors text-slate-400">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<!-- Main Canvas -->
+<main class="relative z-10 min-h-screen pt-24 px-6 pb-40">
+<!-- Welcome Section -->
+<div class="mb-12">
+<p class="text-primary font-medium tracking-wide text-sm mb-2 uppercase">Current Journey</p>
+<h2 class="text-4xl font-extrabold text-on-surface leading-tight tracking-tight">Moonlight Drifting</h2>
+</div>
+<!-- Asymmetric Map Indicators (Simulated Waypoints) -->
+<div class="relative w-full h-[353px] pointer-events-none">
+<!-- Pulsing Waypoint 1 -->
+<div class="absolute top-[20%] left-[30%] group pointer-events-auto">
+<div class="w-6 h-6 bg-primary rounded-full animate-pulse shadow-[0_0_20px_rgba(255,186,56,0.6)] flex items-center justify-center">
+<div class="w-2 h-2 bg-on-primary rounded-full"></div>
+</div>
+<div class="mt-2 bg-surface-container p-3 rounded-xl border border-outline-variant/20 backdrop-blur-md opacity-0 group-hover:opacity-100 transition-opacity">
+<p class="text-xs font-bold text-primary">Station 1</p>
+<p class="text-xs text-on-surface-variant">Lucid Dreaming</p>
+</div>
+</div>
+<!-- Waypoint 2 -->
+<div class="absolute top-[60%] right-[15%] group pointer-events-auto">
+<div class="w-4 h-4 bg-secondary-fixed-dim rounded-full shadow-[0_0_15px_rgba(186,195,255,0.4)] flex items-center justify-center">
+<div class="w-1.5 h-1.5 bg-on-secondary rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- Float Search Bar Cluster -->
+<div class="fixed bottom-28 left-0 right-0 px-6 z-40">
+<div class="max-w-md mx-auto relative">
+<!-- Decorative Glow Behind Search -->
+<div class="absolute inset-0 bg-primary/10 blur-3xl -z-10 rounded-full"></div>
+<div class="flex items-center gap-3 bg-surface-container/90 backdrop-blur-2xl p-2 rounded-full shadow-[0_20px_40px_rgba(17,19,28,0.4)] border border-outline-variant/10">
+<div class="pl-4 text-primary">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+</div>
+<input class="w-full bg-transparent border-none focus:ring-0 text-on-surface placeholder-on-tertiary-container font-lexend text-lg py-2" placeholder="Where to?" type="text"/>
+<button class="bg-surface-container-highest p-3 rounded-full text-primary hover:text-amber-200 transition-all active:scale-95">
+<span class="material-symbols-outlined" data-icon="my_location">my_location</span>
+</button>
+</div>
+</div>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 rounded-t-[2rem] bg-[#11131c]/80 backdrop-blur-xl shadow-[0_-10px_40px_rgba(17,19,28,0.6)]">
+<div class="flex justify-around items-center w-full px-4 pb-6 pt-3 font-lexend text-sm font-medium">
+<!-- Active: Journey -->
+<a class="flex flex-col items-center justify-center bg-gradient-to-br from-[#ffba38] to-[#a87500] text-[#11131c] rounded-2xl px-5 py-2 scale-105 transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="explore" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="mt-1">Journey</span>
+</a>
+<!-- Inactive: Alarms -->
+<a class="flex flex-col items-center justify-center text-slate-400 p-2 hover:text-amber-200 transition-all scale-95 active:duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="alarm">alarm</span>
+<span class="mt-1">Alarms</span>
+</a>
+<!-- Inactive: Sleep Map -->
+<a class="flex flex-col items-center justify-center text-slate-400 p-2 hover:text-amber-200 transition-all scale-95 active:duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span class="mt-1">Sleep Map</span>
+</a>
+<!-- Inactive: Profile -->
+<a class="flex flex-col items-center justify-center text-slate-400 p-2 hover:text-amber-200 transition-all scale-95 active:duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="person_2">person_2</span>
+<span class="mt-1">Profile</span>
+</a>
+</div>
+</nav>
+<!-- Contextual Details Card (Bento Style Peeking) -->
+<div class="fixed bottom-48 left-6 right-6 z-30 flex gap-4 overflow-x-auto no-scrollbar pb-4">
+<div class="min-w-[140px] bg-surface-container/60 backdrop-blur-md p-4 rounded-xl border border-outline-variant/10">
+<span class="material-symbols-outlined text-primary mb-2" data-icon="speed">speed</span>
+<p class="text-[10px] text-on-tertiary-container uppercase tracking-widest font-bold">ETA</p>
+<p class="text-lg font-bold">23:45</p>
+</div>
+<div class="min-w-[140px] bg-surface-container/60 backdrop-blur-md p-4 rounded-xl border border-outline-variant/10">
+<span class="material-symbols-outlined text-secondary mb-2" data-icon="bedtime">bedtime</span>
+<p class="text-[10px] text-on-tertiary-container uppercase tracking-widest font-bold">Phases</p>
+<p class="text-lg font-bold">4 Cycles</p>
+</div>
+<div class="min-w-[140px] bg-surface-container/60 backdrop-blur-md p-4 rounded-xl border border-outline-variant/10">
+<span class="material-symbols-outlined text-amber-200 mb-2" data-icon="sound_detection_dog_barking">sound_detection_dog_barking</span>
+<p class="text-[10px] text-on-tertiary-container uppercase tracking-widest font-bold">Ambient</p>
+<p class="text-lg font-bold">Forest Rain</p>
+</div>
+</div>
+</body></html>

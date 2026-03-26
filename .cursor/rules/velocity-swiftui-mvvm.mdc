@@ -1,0 +1,43 @@
+---
+description: SwiftUI, MVVM, and modern Swift conventions for Velocity iOS
+globs: **/*.swift
+alwaysApply: false
+---
+
+# SwiftUI + MVVM
+
+## Structure
+
+- **Views** (`struct …: View`): layout, navigation, and binding to view model state. Avoid networking, location callbacks, or HealthKit in the view layer.
+- **View models**: use `@Observable` types; default to `@MainActor` for UI-facing models. Expose intent methods (`func load()`, `func selectMode(_:)`) instead of mutating state from views ad hoc.
+- **Services / use cases**: MapKit, Core Location, notifications, HealthKit, persistence—behind small types or protocols injected into view models.
+
+```swift
+// Prefer
+@MainActor
+@Observable
+final class TripPlanningViewModel {
+    private let locationService: LocationServing
+    // ...
+}
+
+// Avoid
+struct BadView: View {
+    func onAppear() { URLSession.shared.dataTask(...) } // move to service + VM
+}
+```
+
+## SwiftUI
+
+- Use `NavigationStack` and value-based navigation where it fits the feature.
+- Use `async`/`await` and structured concurrency; avoid blocking the main actor on slow work.
+- Previews should use **preview-specific** view models or mocks, not live services.
+
+## Swift 6 and testing
+
+- When strict concurrency is enabled, favor `Sendable` models and clear actor boundaries.
+- Prefer **Swift Testing** for new tests if the project’s Xcode toolchain supports it; use **XCTest** where required for compatibility. Test view models with injected fakes, not the simulator UI.
+
+## Accessibility
+
+- Support Dynamic Type, VoiceOver labels, and sufficient contrast; do not encode meaning by color alone.
