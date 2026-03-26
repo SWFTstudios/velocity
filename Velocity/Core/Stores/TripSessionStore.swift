@@ -77,4 +77,11 @@ final class TripSessionStore {
         session.currentLocationLabel = "Grand Central District"
         session.etaDisplay = "06:42 AM"
     }
+
+    /// Updates ETA / distance from live MapKit routing.
+    func applyRoutingSummary(etaDisplay: String, distanceDisplay: String) {
+        session.etaDisplay = etaDisplay
+        session.distanceDisplay = distanceDisplay
+    }
 }
+

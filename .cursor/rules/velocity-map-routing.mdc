@@ -1,0 +1,31 @@
+---
+description: MapKit routing, polylines, and geocoding rules for Velocity
+globs: Velocity/**/Map/**/*.swift
+alwaysApply: false
+---
+
+# Velocity — MapKit routing & polylines
+
+## Sources of truth
+
+- The SwiftUI map view (`MapScreen`) must render from `MapViewModel` state (`destination`, `currentRoute`, `cameraPosition`).
+- Polyline rendering must come from `MKRoute` (`RouteInfo.polylineCoordinates` → `MapPolyline`).
+
+## Route building policy
+
+- Route calculation triggers belong in `MapViewModel` / services (not in SwiftUI view bodies).
+- When origin→destination routing fails due to missing/unstable origin, route refresh should recover on later location fixes.
+- Live route refresh is throttled/debounced using movement thresholds (distance/time) and generation tokens so MapKit is not spammed.
+
+## Reverse geocoding policy
+
+- Reverse geocoding destination labels should be cached by quantized coordinates (Velocity plan: round to 4 decimal places) to avoid repeated lookups.
+- Only geocode on destination commit (set / drag end), not on every drag tick.
+
+## Privacy
+
+- Do not log raw route coordinates or user-derived locations in production logs.
+
+## Active trip integration
+
+- The “active trip” screen should consume a shared route snapshot (from session/store state), not recalculate independently.

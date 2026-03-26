@@ -3,25 +3,30 @@
 //  Velocity
 //
 
-import CoreLocation
-import MapKit
 import SwiftUI
 
 struct HomeMapSearchView: View {
     @Bindable var tripStore: TripSessionStore
     @Binding var path: NavigationPath
 
-    @State private var searchQuery = ""
-    @FocusState private var searchFocused: Bool
+    @State private var mapViewModel: MapViewModel
 
-    private static let defaultRegion = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: 51.5074, longitude: -0.1278),
-        span: MKCoordinateSpan(latitudeDelta: 0.08, longitudeDelta: 0.08)
-    )
+    init(tripStore: TripSessionStore, path: Binding<NavigationPath>) {
+        self.tripStore = tripStore
+        self._path = path
+        _mapViewModel = State(initialValue: MapViewModel(tripStore: tripStore))
+    }
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            mapLayer
+            MapScreen(
+                viewModel: mapViewModel,
+                tripStore: tripStore,
+                onPlanWake: {
+                    guard tripStore.session.destination != nil else { return }
+                    path.append(HomeRoute.alarmSetup)
+                }
+            )
 
             VStack(alignment: .leading, spacing: 0) {
                 topChrome
@@ -30,8 +35,6 @@ struct HomeMapSearchView: View {
                 Spacer(minLength: 120)
             }
             .padding(.top, 8)
-
-            searchBar
         }
         .background(VelocityColor.surface)
         .navigationBarTitleDisplayMode(.inline)
@@ -44,24 +47,6 @@ struct HomeMapSearchView: View {
                     .foregroundStyle(.primary)
             }
         }
-    }
-
-    private var mapLayer: some View {
-        Map(position: .constant(.region(Self.defaultRegion))) {
-            Annotation("Wake zone", coordinate: CLLocationCoordinate2D(latitude: 51.515, longitude: -0.12)) {
-                Circle()
-                    .stroke(VelocityColor.primary, lineWidth: 3)
-                    .frame(width: 24, height: 24)
-            }
-            Annotation("You", coordinate: CLLocationCoordinate2D(latitude: 51.50, longitude: -0.135)) {
-                Circle()
-                    .fill(Color.blue.opacity(0.9))
-                    .frame(width: 14, height: 14)
-            }
-        }
-        .mapStyle(.standard(elevation: .realistic, emphasis: .muted, pointsOfInterest: .excludingAll))
-        .colorScheme(.dark)
-        .ignoresSafeArea(edges: .top)
     }
 
     private var topChrome: some View {
@@ -141,63 +126,6 @@ struct HomeMapSearchView: View {
         .frame(width: 132, alignment: .leading)
         .background(VelocityColor.surfaceContainerHighest.opacity(0.95))
         .clipShape(RoundedRectangle(cornerRadius: VelocityRadius.card, style: .continuous))
-    }
-
-    private var searchBar: some View {
-        VStack(spacing: VelocitySpacing.sm) {
-            HStack(spacing: 12) {
-                Circle()
-                    .fill(VelocityColor.primary.opacity(0.35))
-                    .frame(width: 10, height: 10)
-                TextField("Where to?", text: $searchQuery)
-                    .focused($searchFocused)
-                    .foregroundStyle(VelocityColor.onSurface)
-                    .font(VelocityFontStyle.body())
-                Spacer(minLength: 8)
-                Button {
-                    useSampleDestination()
-                } label: {
-                    Image(systemName: "location.circle.fill")
-                        .font(.title2)
-                        .foregroundStyle(VelocityColor.primary)
-                }
-                .accessibilityLabel("Use sample destination")
-            }
-            .padding(.horizontal, VelocitySpacing.md)
-            .padding(.vertical, 14)
-            .background(VelocityColor.surfaceContainerLowest)
-            .clipShape(RoundedRectangle(cornerRadius: VelocityRadius.control, style: .continuous))
-
-            HStack(spacing: VelocitySpacing.md) {
-                Button("Plan wake") {
-                    if tripStore.session.destination != nil {
-                        path.append(HomeRoute.alarmSetup)
-                    } else {
-                        useSampleDestination()
-                        path.append(HomeRoute.alarmSetup)
-                    }
-                }
-                .buttonStyle(VelocityPrimaryButtonStyle())
-            }
-        }
-        .padding(.horizontal, VelocitySpacing.md)
-        .padding(.bottom, VelocitySpacing.lg)
-        .background(
-            VelocityColor.surface.opacity(0.92)
-                .ignoresSafeArea(edges: .bottom)
-        )
-    }
-
-    private func useSampleDestination() {
-        tripStore.setDestination(
-            CommuteDestination(
-                title: "St. Pancras International",
-                subtitle: "London, United Kingdom",
-                latitude: 51.5319,
-                longitude: -0.1263
-            )
-        )
-        searchQuery = tripStore.session.destination?.title ?? ""
     }
 }
 
