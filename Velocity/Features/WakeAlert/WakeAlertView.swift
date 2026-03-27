@@ -103,6 +103,87 @@ struct WakeAlertView: View {
                 label: "ETA",
                 value: tripStore.session.etaDisplay
             )
+            alarmCallStatusCard
+        }
+    }
+
+    private var alarmCallStatusCard: some View {
+        VStack(alignment: .leading, spacing: VelocitySpacing.sm) {
+            HStack(spacing: VelocitySpacing.sm) {
+                Image(systemName: statusIcon)
+                    .foregroundStyle(VelocityColor.primary)
+                Text(statusTitle)
+                    .font(VelocityFontStyle.title(16))
+                    .foregroundStyle(VelocityColor.onSurface)
+                Spacer()
+                if tripStore.session.alarmCallState == .calling {
+                    ProgressView()
+                        .controlSize(.small)
+                }
+            }
+
+            if let errorText = statusDetail {
+                Text(errorText)
+                    .font(VelocityFontStyle.body(13))
+                    .foregroundStyle(VelocityColor.onSurfaceVariant)
+            }
+
+            if tripStore.session.alarmCallState == .failed {
+                Button("Retry call") {
+                    Task {
+                        await tripStore.retryAlarmCall()
+                    }
+                }
+                .buttonStyle(.bordered)
+            }
+        }
+        .padding(VelocitySpacing.md)
+        .background(VelocityColor.surfaceContainer)
+        .clipShape(RoundedRectangle(cornerRadius: VelocityRadius.card, style: .continuous))
+    }
+
+    private var statusIcon: String {
+        switch tripStore.session.alarmCallState {
+        case .idle:
+            return "phone"
+        case .calling:
+            return "phone.connection"
+        case .success:
+            return "checkmark.seal.fill"
+        case .failed:
+            return "exclamationmark.triangle.fill"
+        case .skippedNotConfigured:
+            return "phone.badge.xmark"
+        }
+    }
+
+    private var statusTitle: String {
+        switch tripStore.session.alarmCallState {
+        case .idle:
+            return "Call pending"
+        case .calling:
+            return "Calling..."
+        case .success:
+            return "Call started"
+        case .failed:
+            return "Call failed"
+        case .skippedNotConfigured:
+            return "Call not configured"
+        }
+    }
+
+    private var statusDetail: String? {
+        switch tripStore.session.alarmCallState {
+        case .failed:
+            return tripStore.session.lastAlarmCallErrorMessage ?? "Please try again."
+        case .skippedNotConfigured:
+            return "Add local alarm config to enable wake calls."
+        case .success:
+            return "You can still end the trip any time."
+        case .calling:
+            return "Please keep your phone nearby."
+        case .idle:
+            return nil
         }
     }
 
@@ -130,7 +211,7 @@ struct WakeAlertView: View {
 
     private var dismissButton: some View {
         Button("I'm awake") {
-            tripStore.endTrip()
+            tripStore.completeTrip(wasAwakened: true)
             path = NavigationPath()
         }
         .buttonStyle(VelocityPrimaryButtonStyle())

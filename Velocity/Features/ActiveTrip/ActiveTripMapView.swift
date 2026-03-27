@@ -9,6 +9,9 @@ import SwiftUI
 struct ActiveTripMapView: View {
     @Bindable var tripStore: TripSessionStore
     @Binding var path: NavigationPath
+    @Bindable var mapViewModel: MapViewModel
+    let showTripProgressReshowCTA: Bool
+    let onTripProgressReshowTapped: () -> Void
 
     private static let defaultRegion = MKCoordinateRegion(
         center: CLLocationCoordinate2D(latitude: 51.51, longitude: -0.125),
@@ -17,9 +20,19 @@ struct ActiveTripMapView: View {
 
     var body: some View {
         ZStack(alignment: .bottom) {
-            Map(position: .constant(.region(Self.defaultRegion))) {
-                MapPolyline(coordinates: samplePolyline())
-                    .stroke(VelocityColor.primary, lineWidth: 4)
+            Map(position: Binding(
+                get: {
+                    if case .automatic = mapViewModel.cameraPosition {
+                        return .region(Self.defaultRegion)
+                    }
+                    return mapViewModel.cameraPosition
+                },
+                set: { mapViewModel.cameraPosition = $0 }
+            )) {
+                if !mapViewModel.activeRouteCoordinates.isEmpty {
+                    MapPolyline(coordinates: mapViewModel.activeRouteCoordinates)
+                        .stroke(VelocityColor.primary, lineWidth: 4)
+                }
             }
             .mapStyle(.standard(elevation: .realistic, emphasis: .muted, pointsOfInterest: .excludingAll))
             .colorScheme(.dark)
@@ -40,11 +53,40 @@ struct ActiveTripMapView: View {
                 .background(VelocityColor.surfaceContainer.opacity(0.92))
                 .clipShape(Capsule())
                 .padding(.bottom, 200)
+
+            if showTripProgressReshowCTA {
+                Button {
+                    onTripProgressReshowTapped()
+                } label: {
+                    HStack(spacing: VelocitySpacing.sm) {
+                        Image(systemName: "timer.circle.fill")
+                            .foregroundStyle(VelocityColor.onSurfaceVariant)
+                        Text("Trip progress")
+                            .font(VelocityFontStyle.body(14))
+                            .foregroundStyle(VelocityColor.onSurface)
+                    }
+                    .padding(.horizontal, VelocitySpacing.md)
+                    .padding(.vertical, 10)
+                    .background(VelocityColor.surfaceContainerHighest.opacity(0.92))
+                    .clipShape(Capsule())
+                }
+                .buttonStyle(.plain)
+                .padding(.bottom, 260)
+                .transition(.opacity.combined(with: .move(edge: .bottom)))
+            }
         }
         .background(VelocityColor.surface)
         .navigationTitle("Sleep map / route")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .toolbarBackground(Color(uiColor: .systemBackground), for: .navigationBar)
+        .onAppear {
+            mapViewModel.onSceneActive()
+            mapViewModel.fitCameraToRoute()
+        }
+        .onDisappear {
+            mapViewModel.onSceneInactive()
+        }
     }
 
     private var tripCard: some View {
@@ -129,7 +171,7 @@ struct ActiveTripMapView: View {
                 }
 
                 Button {
-                    tripStore.endTrip()
+                    tripStore.completeTrip(wasAwakened: false)
                     path = NavigationPath()
                 } label: {
                     Label("End trip", systemImage: "stop.fill")
@@ -145,8 +187,7 @@ struct ActiveTripMapView: View {
             }
 
             Button("Simulate approaching destination") {
-                tripStore.applyWakePreview(minutes: 4)
-                path.append(HomeRoute.wakeAlert)
+                tripStore.triggerWake(reason: .manual)
             }
             .font(VelocityFontStyle.body(14))
             .foregroundStyle(VelocityColor.secondary)
@@ -157,18 +198,17 @@ struct ActiveTripMapView: View {
         .background(VelocityColor.surface.opacity(0.94).ignoresSafeArea(edges: .bottom))
     }
 
-    private func samplePolyline() -> [CLLocationCoordinate2D] {
-        [
-            CLLocationCoordinate2D(latitude: 51.50, longitude: -0.14),
-            CLLocationCoordinate2D(latitude: 51.505, longitude: -0.13),
-            CLLocationCoordinate2D(latitude: 51.512, longitude: -0.125),
-            CLLocationCoordinate2D(latitude: 51.518, longitude: -0.122),
-        ]
-    }
 }
 
 #Preview {
     NavigationStack {
-        ActiveTripMapView(tripStore: TripSessionStore(), path: .constant(NavigationPath()))
+        let store = TripSessionStore()
+        ActiveTripMapView(
+            tripStore: store,
+            path: .constant(NavigationPath()),
+            mapViewModel: MapViewModel(tripStore: store, services: .preview),
+            showTripProgressReshowCTA: false,
+            onTripProgressReshowTapped: {}
+        )
     }
 }

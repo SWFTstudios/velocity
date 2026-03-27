@@ -13,7 +13,9 @@ import SwiftUI
 struct MapScreen: View {
     @Bindable var viewModel: MapViewModel
     @Bindable var tripStore: TripSessionStore
-    var onPlanWake: () -> Void
+    @Bindable var settingsStore: UserSettingsStore
+    var onSearchTapped: () -> Void
+    @State private var pendingPressPoint: CGPoint?
 
     var body: some View {
         MapReader { proxy in
@@ -21,8 +23,18 @@ struct MapScreen: View {
                 UserAnnotation()
 
                 if let dest = viewModel.displayDestinationCoordinate {
-                    Annotation("Destination", coordinate: dest) {
-                        DraggableDestinationAnnotation(proxy: proxy, viewModel: viewModel)
+                    if tripStore.session.status == .planning {
+                        Annotation("Destination", coordinate: dest) {
+                            DraggableDestinationAnnotation(proxy: proxy, viewModel: viewModel)
+                        }
+                    } else {
+                        Annotation("Destination", coordinate: dest) {
+                            Image(systemName: "mappin.circle.fill")
+                                .font(.system(size: 36))
+                                .foregroundStyle(VelocityColor.primary)
+                                .shadow(color: .black.opacity(0.35), radius: 3, y: 2)
+                                .accessibilityLabel("Destination")
+                        }
                     }
 
                     if case let .distanceKilometers(km) = tripStore.session.threshold {
@@ -38,11 +50,28 @@ struct MapScreen: View {
                         .stroke(VelocityColor.primary, lineWidth: 5)
                 }
             }
-            .mapStyle(.standard(elevation: .realistic, emphasis: .muted, pointsOfInterest: .excludingAll))
-            .colorScheme(.dark)
+            .mapStyle(configuredMapStyle)
+            .preferredColorScheme(viewModel.isNightModeActive ? .dark : .light)
             .onMapCameraChange(frequency: .onEnd) {
                 viewModel.userDidManuallyAdjustCamera()
             }
+            .simultaneousGesture(
+                DragGesture(minimumDistance: 0, coordinateSpace: .local)
+                    .onChanged { value in
+                        pendingPressPoint = value.location
+                    }
+            )
+            .simultaneousGesture(
+                LongPressGesture(minimumDuration: 0.42)
+                    .onEnded { _ in
+                        guard tripStore.session.status == .idle || tripStore.session.status == .planning else { return }
+                        guard let point = pendingPressPoint else { return }
+                        guard let coordinate = proxy.convert(point, from: .local) else { return }
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            viewModel.commitLongPressDestination(at: coordinate)
+                        }
+                    }
+            )
         }
         .ignoresSafeArea(edges: .top)
         .overlay(alignment: .topTrailing) { mapControls }
@@ -68,44 +97,33 @@ struct MapScreen: View {
     }
 
     private var mapControls: some View {
-        VStack(spacing: VelocitySpacing.sm) {
-            Button {
-                viewModel.centerOnUser()
-            } label: {
-                Image(systemName: "location.fill")
-                    .frame(width: 44, height: 44)
-                    .background(VelocityColor.surfaceContainerLowest.opacity(0.95))
-                    .clipShape(Circle())
-            }
-            .accessibilityLabel("Recenter on your location")
-
-            Button {
-                viewModel.toggleFollowUser()
-            } label: {
-                Image(systemName: viewModel.isFollowUserActive ? "location.fill.viewfinder" : "location.slash")
-                    .frame(width: 44, height: 44)
-                    .background(
-                        viewModel.isFollowUserActive
-                            ? VelocityColor.primary.opacity(0.35)
-                            : VelocityColor.surfaceContainerLowest.opacity(0.95)
-                    )
-                    .clipShape(Circle())
-            }
-            .accessibilityLabel(viewModel.isFollowUserActive ? "Stop following location" : "Follow your location")
-
-            if viewModel.destination != nil {
-                Button {
-                    viewModel.clearDestination()
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .frame(width: 44, height: 44)
-                        .background(VelocityColor.surfaceContainerLowest.opacity(0.95))
-                        .clipShape(Circle())
+        MapControlsView(
+            mapDisplayType: viewModel.mapDisplayType,
+            isFollowingUser: viewModel.isFollowUserActive,
+            isNightMode: viewModel.isNightModeActive,
+            showsClearDestination: tripStore.session.status == .planning && viewModel.destination != nil,
+            onCycleMapType: { viewModel.cycleMapDisplayType() },
+            onCenterOrFollowToggle: {
+                withAnimation(.easeInOut(duration: 0.22)) {
+                    if viewModel.isFollowUserActive {
+                        // Currently following: tap to stop following/free roam.
+                        viewModel.enterBrowseMode()
+                    } else if tripStore.session.destination != nil {
+                        // Destination/trip selected: center on the trip context first, then enable follow mode.
+                        if viewModel.currentRoute != nil {
+                            viewModel.fitCameraToRoute()
+                        } else {
+                            viewModel.fitCameraToUserAndDestination()
+                        }
+                        viewModel.enterFollowUserMode()
+                    } else {
+                        viewModel.centerOnUser()
+                    }
                 }
-                .accessibilityLabel("Clear destination")
-            }
-        }
-        .foregroundStyle(VelocityColor.onSurface)
+            },
+            onToggleTheme: { withAnimation(.easeInOut(duration: 0.22)) { viewModel.toggleMapThemeMode() } },
+            onClearDestination: { withAnimation(.easeInOut(duration: 0.2)) { viewModel.clearDestination() } }
+        )
         .padding(.trailing, VelocitySpacing.md)
         .padding(.top, 160)
     }
@@ -119,128 +137,58 @@ struct MapScreen: View {
                     .foregroundStyle(VelocityColor.onSurfaceVariant)
             }
 
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundStyle(VelocityColor.onSurfaceVariant)
-                TextField("Search for a destination", text: $viewModel.searchText)
-                    .foregroundStyle(VelocityColor.onSurface)
-                    .font(VelocityFontStyle.body())
-                    .onChange(of: viewModel.searchText) { _, new in
-                        viewModel.syncSearchQuery(new)
-                        viewModel.showsSearchSuggestions = !new.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                    }
-                if !viewModel.searchText.isEmpty {
-                    Button {
-                        viewModel.syncSearchQuery("")
-                        viewModel.showsSearchSuggestions = false
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(VelocityColor.onSurfaceVariant)
-                    }
-                    .accessibilityLabel("Clear search")
-                }
-            }
-            .padding(.horizontal, VelocitySpacing.md)
-            .padding(.vertical, 12)
-            .background(VelocityColor.surfaceContainerLowest)
-            .clipShape(RoundedRectangle(cornerRadius: VelocityRadius.control, style: .continuous))
+            if tripStore.session.status == .idle || tripStore.session.status == .planning {
+                HStack(spacing: VelocitySpacing.sm) {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(VelocityColor.onSurfaceVariant)
 
-            if viewModel.showsSearchSuggestions, !viewModel.searchCompletions.isEmpty {
-                ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 0) {
-                        ForEach(viewModel.searchCompletions) { item in
-                            Button {
-                                viewModel.selectSearchCompletion(item)
-                            } label: {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(item.title)
-                                        .font(VelocityFontStyle.body())
-                                        .foregroundStyle(VelocityColor.onSurface)
-                                    if !item.subtitle.isEmpty {
-                                        Text(item.subtitle)
-                                            .font(VelocityFontStyle.body(12))
-                                            .foregroundStyle(VelocityColor.onSurfaceVariant)
-                                    }
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(.vertical, 10)
-                                .padding(.horizontal, VelocitySpacing.md)
-                            }
-                            Divider().opacity(0.3)
+                    Button {
+                        onSearchTapped()
+                    } label: {
+                        HStack(spacing: VelocitySpacing.sm) {
+                            Text(viewModel.searchText.isEmpty ? "Search for a destination" : viewModel.searchText)
+                                .foregroundStyle(viewModel.searchText.isEmpty ? VelocityColor.onSurfaceVariant : VelocityColor.onSurface)
+                                .font(VelocityFontStyle.body())
+                                .lineLimit(1)
+                            Spacer()
                         }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+
+                    if !viewModel.searchText.isEmpty {
+                        Button {
+                            viewModel.syncSearchQuery("")
+                            viewModel.clearDestination()
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(VelocityColor.onSurfaceVariant)
+                                .font(.system(size: 18))
+                        }
+                        .accessibilityLabel("Clear search")
                     }
                 }
-                .frame(maxHeight: 200)
+                .padding(.horizontal, VelocitySpacing.md)
+                .padding(.vertical, 12)
                 .background(VelocityColor.surfaceContainerLowest)
                 .clipShape(RoundedRectangle(cornerRadius: VelocityRadius.control, style: .continuous))
             }
-
-            if let dest = viewModel.destination {
-                VStack(alignment: .leading, spacing: 6) {
-                    Text("DESTINATION")
-                        .font(VelocityFontStyle.label(10))
-                        .foregroundStyle(VelocityColor.primary)
-                    Text(dest.title)
-                        .font(VelocityFontStyle.title(17))
-                        .foregroundStyle(VelocityColor.onSurface)
-                    Text(dest.subtitle)
-                        .font(VelocityFontStyle.body(12))
-                        .foregroundStyle(VelocityColor.onSurfaceVariant)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(VelocitySpacing.md)
-                .background(VelocityColor.surfaceContainerHighest.opacity(0.92))
-                .clipShape(RoundedRectangle(cornerRadius: VelocityRadius.card, style: .continuous))
-            }
-
-            if let route = viewModel.currentRoute {
-                HStack {
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("ROUTE")
-                            .font(VelocityFontStyle.label(10))
-                            .foregroundStyle(VelocityColor.onSurfaceVariant)
-                        Text(String(format: "%.0f min", route.expectedTravelTime / 60))
-                            .font(VelocityFontStyle.title(17))
-                            .foregroundStyle(VelocityColor.onSurface)
-                    }
-                    Spacer()
-                    VStack(alignment: .trailing, spacing: 4) {
-                        Text("DISTANCE")
-                            .font(VelocityFontStyle.label(10))
-                            .foregroundStyle(VelocityColor.onSurfaceVariant)
-                        Text(String(format: "%.1f km", route.distance / 1000))
-                            .font(VelocityFontStyle.title(17))
-                            .foregroundStyle(VelocityColor.onSurface)
-                    }
-                }
-                .padding(VelocitySpacing.md)
-                .background(VelocityColor.surfaceContainerHighest.opacity(0.92))
-                .clipShape(RoundedRectangle(cornerRadius: VelocityRadius.card, style: .continuous))
-
-                Button("Clear route") {
-                    viewModel.clearRoute()
-                    viewModel.enterBrowseMode()
-                }
-                .font(VelocityFontStyle.body(12))
-                .foregroundStyle(VelocityColor.primary)
-            }
-
-            if let err = viewModel.routingErrorMessage {
-                Text(err)
-                    .font(VelocityFontStyle.body(12))
-                    .foregroundStyle(.orange)
-            }
-
-            Button("Plan wake") {
-                onPlanWake()
-            }
-            .buttonStyle(VelocityPrimaryButtonStyle())
-            .disabled(tripStore.session.destination == nil)
         }
         .padding(.horizontal, VelocitySpacing.md)
         .padding(.bottom, VelocitySpacing.lg)
         .padding(.top, VelocitySpacing.sm)
         .background(VelocityColor.surface.opacity(0.94))
+    }
+
+    private var configuredMapStyle: MapStyle {
+        switch viewModel.mapDisplayType {
+        case .standard:
+            return .standard(elevation: .realistic, emphasis: .muted, pointsOfInterest: .excludingAll)
+        case .hybrid:
+            return .hybrid(elevation: .realistic, pointsOfInterest: .excludingAll)
+        case .imagery:
+            return .imagery(elevation: .realistic)
+        }
     }
 }
 
@@ -261,7 +209,7 @@ private struct MapScreenPreviewWrapper: View {
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
-            MapScreen(viewModel: viewModel, tripStore: tripStore, onPlanWake: {})
+            MapScreen(viewModel: viewModel, tripStore: tripStore, settingsStore: UserSettingsStore(), onSearchTapped: {})
         }
     }
 }

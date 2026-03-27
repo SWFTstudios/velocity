@@ -73,6 +73,67 @@ struct SettingsView: View {
                         Text(theme.displayName).tag(theme)
                     }
                 }
+
+                Picker("Distance unit", selection: Binding(
+                    get: { settingsStore.settings.measurementUnit },
+                    set: { settingsStore.setMeasurementUnit($0) }
+                )) {
+                    ForEach(MeasurementUnit.allCases, id: \.self) { unit in
+                        Text(unit.displayName).tag(unit)
+                    }
+                }
+
+                let minMiles: Double = 0.1
+                let maxMiles: Double = 10.0
+                let milesToKm = 1.609344
+                let displayStep: Double = 0.1
+
+                let unit = settingsStore.settings.measurementUnit
+                let sliderRange: ClosedRange<Double> = unit == .miles
+                    ? (minMiles ... maxMiles)
+                    : (minMiles * milesToKm ... maxMiles * milesToKm)
+
+                let radiusDisplayValue: Double = {
+                    let km = settingsStore.settings.defaultWakeRadiusKilometers
+                    return unit == .miles ? km / milesToKm : km
+                }()
+
+                VStack(alignment: .leading, spacing: VelocitySpacing.sm) {
+                    Text("Default wake radius")
+                        .font(VelocityFontStyle.title(16))
+                        .foregroundStyle(VelocityColor.onSurface)
+
+                    Text(String(format: "%.1f %@", radiusDisplayValue, unit.distanceSuffix.uppercased()))
+                        .font(VelocityFontStyle.headline(20))
+                        .foregroundStyle(VelocityColor.onSurface)
+
+                    Slider(
+                        value: Binding(
+                            get: {
+                                let km = settingsStore.settings.defaultWakeRadiusKilometers
+                                return unit == .miles ? km / milesToKm : km
+                            },
+                            set: { newValue in
+                                let km = unit == .miles ? newValue * milesToKm : newValue
+                                settingsStore.setDefaultWakeRadiusKilometers(km)
+                            }
+                        ),
+                        in: sliderRange,
+                        step: displayStep
+                    )
+                    .tint(VelocityColor.primary)
+
+                    HStack {
+                        Text(unit == .miles ? "0.1 MI" : String(format: "%.1f KM", minMiles * milesToKm))
+                        .font(VelocityFontStyle.label(11))
+                        .foregroundStyle(VelocityColor.onSurfaceVariant)
+                        Spacer()
+                        Text(unit == .miles ? "10 MI" : String(format: "%.1f KM", maxMiles * milesToKm))
+                        .font(VelocityFontStyle.label(11))
+                        .foregroundStyle(VelocityColor.onSurfaceVariant)
+                    }
+                }
+                .padding(.vertical, VelocitySpacing.sm)
             }
 
             #if DEBUG

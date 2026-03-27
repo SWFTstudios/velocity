@@ -5,7 +5,7 @@
 
 import SwiftUI
 
-private enum UserSettingsKeys {
+enum UserSettingsKeys {
     static let payload = "velocity.userSettings.v1"
 }
 
@@ -48,6 +48,32 @@ final class UserSettingsStore {
     func setTheme(_ theme: AppTheme) {
         settings.theme = theme
         persist()
+    }
+
+    func setMeasurementUnit(_ unit: MeasurementUnit) {
+        settings.measurementUnit = unit
+        persist()
+    }
+
+    func setDefaultWakeRadiusKilometers(_ kilometers: Double) {
+        settings.defaultWakeRadiusKilometers = kilometers
+        persist()
+    }
+
+    nonisolated static func currentMeasurementUnit() -> MeasurementUnit {
+        guard let data = UserDefaults.standard.data(forKey: UserSettingsKeys.payload),
+              let decoded = try? JSONDecoder().decode(UserSettings.self, from: data) else {
+            return .kilometers
+        }
+        return decoded.measurementUnit
+    }
+
+    nonisolated static func currentDefaultWakeRadiusKilometers() -> Double {
+        guard let data = UserDefaults.standard.data(forKey: UserSettingsKeys.payload),
+              let decoded = try? JSONDecoder().decode(UserSettings.self, from: data) else {
+            return 0.3 * 1.609344 // 0.3 mi -> km
+        }
+        return decoded.defaultWakeRadiusKilometers
     }
 
     private func persist() {

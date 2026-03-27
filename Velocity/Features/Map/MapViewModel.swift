@@ -46,6 +46,11 @@ struct MapServices {
 @Observable
 @MainActor
 final class MapViewModel {
+    private enum PreferenceKey {
+        static let mapDisplayType = "map.displayType"
+        static let mapTheme = "map.themeMode"
+    }
+
     private let tripStore: TripSessionStore
     private let services: MapServices
 
@@ -66,6 +71,10 @@ final class MapViewModel {
     var currentRoute: RouteInfo?
     var routingErrorMessage: String?
     var showsSearchSuggestions: Bool = false
+    var mapDisplayType: MapDisplayType = .standard
+    var mapThemeMode: MapThemeMode = .night
+    var lookAroundScene: MKLookAroundScene?
+    var isLookAroundLoading: Bool = false
 
     private var followCameraTimerCancellable: AnyCancellable?
     private var routeGeneration: Int = 0
@@ -79,17 +88,55 @@ final class MapViewModel {
     private var routeRefreshDebounceTask: Task<Void, Never>?
     private var lastRouteOriginLocation: CLLocation?
     private var lastRouteBuildAt: Date?
+    private var lookAroundGeneration: Int = 0
+
+    // Used to restore map UI state after the trip setup sheet is dismissed.
+    private struct TripSetupSheetSnapshot {
+        let mapMode: MapMode
+        let showsSearchSuggestions: Bool
+    }
+
+    private var tripSetupSheetSnapshot: TripSetupSheetSnapshot?
 
     init(tripStore: TripSessionStore) {
         self.tripStore = tripStore
         self.services = MapServices.live
+        hydrateMapPreferences()
         wireSearchPublishing()
     }
 
     init(tripStore: TripSessionStore, services: MapServices) {
         self.tripStore = tripStore
         self.services = services
+        hydrateMapPreferences()
         wireSearchPublishing()
+    }
+
+    func beginTripSetupSheetPresentation() {
+        tripSetupSheetSnapshot = TripSetupSheetSnapshot(
+            mapMode: mapMode,
+            showsSearchSuggestions: showsSearchSuggestions
+        )
+        // Prevent suggestion list from fighting the sheet and keyboard.
+        showsSearchSuggestions = false
+    }
+
+    func endTripSetupSheetPresentation() {
+        guard let snapshot = tripSetupSheetSnapshot else { return }
+        mapMode = snapshot.mapMode
+        showsSearchSuggestions = snapshot.showsSearchSuggestions
+        tripSetupSheetSnapshot = nil
+    }
+
+    private func hydrateMapPreferences() {
+        if let raw = UserDefaults.standard.string(forKey: PreferenceKey.mapDisplayType),
+           let value = MapDisplayType(rawValue: raw) {
+            mapDisplayType = value
+        }
+        if let raw = UserDefaults.standard.string(forKey: PreferenceKey.mapTheme),
+           let value = MapThemeMode(rawValue: raw) {
+            mapThemeMode = value
+        }
     }
 
     private func wireSearchPublishing() {
@@ -118,6 +165,21 @@ final class MapViewModel {
 
     var locationAuthorizationStatus: CLAuthorizationStatus {
         services.location.authorizationStatus
+    }
+
+    var currentUserCoordinate: CLLocationCoordinate2D? {
+        location.latestLocation?.coordinate
+    }
+
+    var activeRouteCoordinates: [CLLocationCoordinate2D] {
+        if let route = currentRoute {
+            return route.polylineCoordinates
+        }
+        return tripStore.session.activeRouteCoordinates.map(\.coordinate)
+    }
+
+    var isNightModeActive: Bool {
+        mapThemeMode == .night
     }
 
     func onSceneActive() {
@@ -156,6 +218,7 @@ final class MapViewModel {
             .sink { [weak self] _ in
                 self?.applyFollowModeCameraIfNeeded()
                 self?.applyLiveRouteRefreshIfNeeded()
+                self?.syncActiveTripProgressIfNeeded()
             }
     }
 
@@ -194,7 +257,6 @@ final class MapViewModel {
     private func applyFollowModeCameraIfNeeded() {
         guard mapMode == .followUser else { return }
         guard let userCoord = location.latestLocation?.coordinate else { return }
-        if currentRoute != nil { return }
 
         if let dest = displayDestinationCoordinate {
             if let region = Self.regionFitting(coordinates: [userCoord, dest], padding: 1.45) {
@@ -264,6 +326,25 @@ final class MapViewModel {
         }
     }
 
+    private func syncActiveTripProgressIfNeeded() {
+        guard tripStore.session.status == .active else { return }
+        guard let route = currentRoute else { return }
+        guard let latestLocation = location.latestLocation else { return }
+        // Straight-line distance so the wake trigger matches the alarm radius boundary,
+        // not turn-by-turn road geometry.
+        guard let destCoord = tripStore.session.destination?.coordinate ?? destination?.coordinate else { return }
+        let destLocation = CLLocation(latitude: destCoord.latitude, longitude: destCoord.longitude)
+        let straightDistanceMeters = latestLocation.distance(from: destLocation)
+
+        tripStore.updateActiveProgress(
+            distanceMeters: straightDistanceMeters,
+            etaSeconds: route.expectedTravelTime,
+            currentLocationLabel: "En route",
+            routeCoordinates: route.polylineCoordinates
+        )
+        _ = tripStore.evaluateWakeTrigger()
+    }
+
     func selectSearchCompletion(_ model: SearchCompletionModel) {
         showsSearchSuggestions = false
         Task { await resolveAndSetDestination(from: model) }
@@ -272,9 +353,14 @@ final class MapViewModel {
     private func resolveAndSetDestination(from model: SearchCompletionModel) async {
         do {
             let place = try await search.resolveCompletion(model)
+            let combinedLabel: String = {
+                if place.subtitle.isEmpty { return place.title }
+                return "\(place.title), \(place.subtitle)"
+            }()
             await MainActor.run {
                 setDestination(place)
-                searchText = place.title
+                // Use a more descriptive label in the Home search bar.
+                searchText = combinedLabel
             }
             await buildRouteAsync()
         } catch {
@@ -289,6 +375,9 @@ final class MapViewModel {
         dragPreviewCoordinate = nil
         syncTripStoreDestination(place)
         enterBrowseMode()
+        Task { [weak self] in
+            await self?.fetchLookAroundSceneForDestination()
+        }
         if currentRoute != nil {
             Task { await buildRouteAsync() }
         } else {
@@ -318,7 +407,82 @@ final class MapViewModel {
         routeRefreshDebounceTask?.cancel()
         routeRefreshDebounceTask = nil
         tripStore.clearDestination()
+        lookAroundScene = nil
+        isLookAroundLoading = false
         enterFollowUserMode()
+    }
+
+    func cycleMapDisplayType() {
+        mapDisplayType = mapDisplayType.next()
+        UserDefaults.standard.set(mapDisplayType.rawValue, forKey: PreferenceKey.mapDisplayType)
+    }
+
+    func toggleMapThemeMode() {
+        mapThemeMode = mapThemeMode == .night ? .day : .night
+        UserDefaults.standard.set(mapThemeMode.rawValue, forKey: PreferenceKey.mapTheme)
+    }
+
+    func commitLongPressDestination(at coordinate: CLLocationCoordinate2D) {
+        routeGeneration += 1
+        currentRoute = nil
+        routeRefreshDebounceTask?.cancel()
+        routeRefreshDebounceTask = nil
+        geocoding.cancelPendingReverseGeocode()
+        geocodeGeneration += 1
+        let token = geocodeGeneration
+
+        mapMode = .selectingDestination
+        destination = PlaceResult(title: "Fetching address...", subtitle: "", coordinate: coordinate)
+        dragPreviewCoordinate = nil
+        lookAroundScene = nil
+        isLookAroundLoading = true
+        syncTripStoreDestination(destination ?? PlaceResult(title: "Fetching address...", subtitle: "", coordinate: coordinate))
+        searchText = "Fetching address..."
+
+        Task { [weak self] in
+            guard let self else { return }
+            var resolvedAddress = "Street address unavailable"
+            do {
+                resolvedAddress = try await geocoding.reverseGeocode(coordinate: coordinate)
+            } catch {
+                resolvedAddress = "Street address unavailable"
+            }
+            await MainActor.run {
+                guard token == self.geocodeGeneration else { return }
+                if var d = self.destination {
+                    d.title = resolvedAddress
+                    d.subtitle = ""
+                    self.destination = d
+                    self.syncTripStoreDestination(d)
+                    self.searchText = resolvedAddress
+                }
+                self.mapMode = .browse
+                self.fitCameraToUserAndDestination()
+            }
+            await self.buildRouteAsync()
+            await self.fetchLookAroundSceneForDestination()
+        }
+    }
+
+    func fetchLookAroundSceneForDestination() async {
+        guard let destination else {
+            lookAroundScene = nil
+            isLookAroundLoading = false
+            return
+        }
+
+        lookAroundGeneration += 1
+        let token = lookAroundGeneration
+        lookAroundScene = nil
+        isLookAroundLoading = true
+
+        let item = MKMapItem(placemark: MKPlacemark(coordinate: destination.coordinate))
+        item.name = destination.title
+        let request = MKLookAroundSceneRequest(mapItem: item)
+        let scene = try? await request.scene
+        guard token == lookAroundGeneration else { return }
+        lookAroundScene = scene
+        isLookAroundLoading = false
     }
 
     func clearRoute() {
@@ -399,19 +563,27 @@ final class MapViewModel {
         let transport = Self.transportType(for: tripStore.session.mode)
         do {
             let info = try await routing.route(from: originCoord, to: destCoord, transportType: transport)
+            let straightPolyline = [originCoord, destCoord]
             await MainActor.run {
                 guard token == self.routeGeneration else { return }
-                self.currentRoute = info
+                // Draw polyline as a straight segment (no road geometry), but keep ETA/distance from MKDirections.
+                let straightInfo = RouteInfo(route: info.route, polylineCoordinates: straightPolyline)
+                self.currentRoute = straightInfo
                 self.routingErrorMessage = nil
                 self.mapMode = .viewingRoute
-                self.applyRoutingToTripSession(info)
-                self.fitCameraToRoute(from: info)
+                self.applyRoutingToTripSession(straightInfo)
+                self.tripStore.updateRouteCoordinates(straightInfo.polylineCoordinates)
+                if let user = self.location.latestLocation?.coordinate {
+                    self.tripStore.setOriginCoordinateIfNeeded(user)
+                }
+                self.syncActiveTripProgressIfNeeded()
+                self.fitCameraToRoute(from: straightInfo)
             }
         } catch {
             await MainActor.run {
                 guard token == self.routeGeneration else { return }
                 self.routingErrorMessage = "Could not build a route."
-                self.currentRoute = nil
+                // Keep the last good route for resilience during transient failures.
             }
         }
     }
@@ -422,8 +594,13 @@ final class MapViewModel {
         formatter.dateStyle = .none
         let eta = Date().addingTimeInterval(info.expectedTravelTime)
         let etaString = formatter.string(from: eta)
-        let km = info.distance / 1000
-        let distString = String(format: "%.1f km", km)
+        let distString: String
+        switch UserSettingsStore.currentMeasurementUnit() {
+        case .kilometers:
+            distString = String(format: "%.1f km", info.distance / 1000)
+        case .miles:
+            distString = String(format: "%.1f mi", info.distance / 1609.344)
+        }
         tripStore.applyRoutingSummary(etaDisplay: etaString, distanceDisplay: distString)
     }
 
@@ -433,7 +610,15 @@ final class MapViewModel {
     }
 
     private func fitCameraToRoute(from info: RouteInfo) {
-        let rect = info.route.polyline.boundingMapRect
+        let coords = info.polylineCoordinates
+        guard coords.count >= 2 else {
+            // Fallback: if something weird happens, fit to user + destination.
+            fitCameraToUserAndDestination()
+            return
+        }
+
+        let polyline = MKPolyline(coordinates: coords, count: coords.count)
+        let rect = polyline.boundingMapRect
         let region = MKCoordinateRegion(rect)
         setProgrammaticCamera(.region(region))
     }

@@ -90,6 +90,7 @@ A **shared scheme** lives at [`Velocity.xcodeproj/xcshareddata/xcschemes/Velocit
 
 - **Stitch MCP** is configured in [`.cursor/mcp.json`](.cursor/mcp.json) for editor/tooling use.
 - Replace `YOUR-API-KEY` with a real key locally. **Do not commit production API keys.** Prefer placeholders in shared branches and team documentation that points to a secure secret store.
+- Alarm call endpoint config should be local-only in `Velocity/Core/Services/Alarm/AlarmCallConfig.local.json` (use committed `AlarmCallConfig.example.json` as template).
 
 ## Contributing
 

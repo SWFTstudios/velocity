@@ -1,0 +1,8 @@
+{
+  "alarmEndpoint": "https://your-domain.com/alarm/call",
+  "devApiKey": "REPLACE_LOCAL_ONLY",
+  "requestTimeoutSeconds": 12,
+  "maxRetryCount": 1,
+  "defaultToPhoneNumber": "+15555550123",
+  "twilioFromPhoneSid": "PNxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+}

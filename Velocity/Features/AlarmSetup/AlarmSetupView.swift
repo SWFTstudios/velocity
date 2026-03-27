@@ -7,33 +7,42 @@ import SwiftUI
 
 struct AlarmSetupView: View {
     @Bindable var tripStore: TripSessionStore
-    @Binding var path: NavigationPath
-
-    @State private var thresholdKind: ThresholdKind = .distance
-    @State private var distanceKm: Double = 10.5
-    @State private var minutesBefore: Double = 15
-
-    private enum ThresholdKind: String, CaseIterable {
-        case distance = "Distance"
-        case time = "Time"
-    }
+    @Bindable var settingsStore: UserSettingsStore
+    @Bindable var mapViewModel: MapViewModel
+    var onDismiss: (() -> Void)?
+    var onStartTrip: (() -> Void)?
 
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: VelocitySpacing.lg) {
+                sheetHeader
                 destinationCard
                 transitModePicker
-                wakeThresholdSection
                 quietModeRow
                 startButton
             }
             .padding(VelocitySpacing.md)
         }
         .background(VelocityColor.surface.ignoresSafeArea())
-        .navigationTitle("Alarm setup")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(Color(uiColor: .systemBackground), for: .navigationBar)
-        .onAppear { syncFromSession() }
+    }
+
+    private var sheetHeader: some View {
+        HStack(alignment: .center) {
+            Text("Trip setup")
+                .font(VelocityFontStyle.title(18))
+                .foregroundStyle(VelocityColor.onSurface)
+            Spacer()
+            Button {
+                onDismiss?()
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.title2)
+                    .foregroundStyle(VelocityColor.onSurfaceVariant)
+                    .contentShape(Rectangle())
+            }
+            .accessibilityLabel("Dismiss trip setup")
+        }
+        .padding(.bottom, 4)
     }
 
     private var destinationCard: some View {
@@ -58,9 +67,7 @@ struct AlarmSetupView: View {
                 HStack(spacing: 6) {
                     Button {
                         tripStore.clearDestination()
-                        if !path.isEmpty {
-                            path.removeLast()
-                        }
+                        onDismiss?()
                     } label: {
                         Image(systemName: "trash")
                     }
@@ -72,7 +79,7 @@ struct AlarmSetupView: View {
             }
             Spacer(minLength: 8)
             Button {
-                path.removeLast()
+                onDismiss?()
             } label: {
                 Image(systemName: "pencil")
             }
@@ -100,65 +107,6 @@ struct AlarmSetupView: View {
         }
     }
 
-    private var wakeThresholdSection: some View {
-        VStack(alignment: .leading, spacing: VelocitySpacing.md) {
-            Text("Wake-up threshold")
-                .font(VelocityFontStyle.title(18))
-                .foregroundStyle(VelocityColor.onSurface)
-            Text("Choose how early you want to be awakened before reaching your stop.")
-                .font(VelocityFontStyle.body(14))
-                .foregroundStyle(VelocityColor.onSurfaceVariant)
-
-            Picker("Kind", selection: $thresholdKind) {
-                ForEach(ThresholdKind.allCases, id: \.self) { k in
-                    Text(k.rawValue).tag(k)
-                }
-            }
-            .pickerStyle(.segmented)
-            .onChange(of: thresholdKind) { _, new in
-                applyThreshold(kind: new)
-            }
-
-            VStack(alignment: .leading, spacing: 8) {
-                if thresholdKind == .distance {
-                    Text(String(format: "%.1f km", distanceKm))
-                        .font(VelocityFontStyle.headline(24))
-                        .foregroundStyle(VelocityColor.onSurface)
-                    Text("RADIUS DISTANCE FROM STOP")
-                        .font(VelocityFontStyle.label(10))
-                        .foregroundStyle(VelocityColor.onSurfaceVariant)
-                    Slider(value: $distanceKm, in: 1 ... 50, step: 0.5)
-                        .tint(VelocityColor.primary)
-                        .onChange(of: distanceKm) { _, v in
-                            tripStore.setThreshold(.distanceKilometers(v))
-                        }
-                    HStack {
-                        Text("1 KM").font(VelocityFontStyle.label(9)).foregroundStyle(VelocityColor.onSurfaceVariant)
-                        Spacer()
-                        Text("25 KM").font(VelocityFontStyle.label(9)).foregroundStyle(VelocityColor.onSurfaceVariant)
-                        Spacer()
-                        Text("50 KM").font(VelocityFontStyle.label(9)).foregroundStyle(VelocityColor.onSurfaceVariant)
-                    }
-                } else {
-                    Text("\(Int(minutesBefore)) min")
-                        .font(VelocityFontStyle.headline(24))
-                        .foregroundStyle(VelocityColor.onSurface)
-                    Text("TIME BEFORE ARRIVAL")
-                        .font(VelocityFontStyle.label(10))
-                        .foregroundStyle(VelocityColor.onSurfaceVariant)
-                    Slider(value: $minutesBefore, in: 5 ... 120, step: 1)
-                        .tint(VelocityColor.primary)
-                        .onChange(of: minutesBefore) { _, v in
-                            tripStore.setThreshold(.timeBeforeArrival(v * 60))
-                        }
-                }
-            }
-            .padding(VelocitySpacing.md)
-            .background(VelocityColor.surfaceContainer)
-            .clipShape(RoundedRectangle(cornerRadius: VelocityRadius.card, style: .continuous))
-        }
-    }
-
     private var quietModeRow: some View {
         HStack(alignment: .top, spacing: VelocitySpacing.md) {
             Image(systemName: "sun.max.fill")
@@ -179,37 +127,27 @@ struct AlarmSetupView: View {
 
     private var startButton: some View {
         Button("Start trip") {
+            if let origin = mapViewModel.currentUserCoordinate {
+                tripStore.setOriginCoordinateIfNeeded(origin)
+            }
             tripStore.startTrip()
-            path.append(HomeRoute.activeTrip)
+            onStartTrip?()
         }
         .buttonStyle(VelocityPrimaryButtonStyle())
         .disabled(tripStore.session.destination == nil)
         .opacity(tripStore.session.destination == nil ? 0.5 : 1)
     }
-
-    private func syncFromSession() {
-        switch tripStore.session.threshold {
-        case let .distanceKilometers(km):
-            thresholdKind = .distance
-            distanceKm = km
-        case let .timeBeforeArrival(t):
-            thresholdKind = .time
-            minutesBefore = t / 60
-        }
-    }
-
-    private func applyThreshold(kind: ThresholdKind) {
-        switch kind {
-        case .distance:
-            tripStore.setThreshold(.distanceKilometers(distanceKm))
-        case .time:
-            tripStore.setThreshold(.timeBeforeArrival(minutesBefore * 60))
-        }
-    }
 }
 
 #Preview {
     NavigationStack {
-        AlarmSetupView(tripStore: TripSessionStore(), path: .constant(NavigationPath()))
+        let store = TripSessionStore()
+        AlarmSetupView(
+            tripStore: store,
+            settingsStore: UserSettingsStore(),
+            mapViewModel: MapViewModel(tripStore: store, services: .preview),
+            onDismiss: nil,
+            onStartTrip: nil
+        )
     }
 }

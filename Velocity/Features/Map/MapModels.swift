@@ -39,12 +39,15 @@ struct RouteInfo: Identifiable, Sendable {
     let route: MKRoute
     let polylineCoordinates: [CLLocationCoordinate2D]
 
-    init(route: MKRoute) {
+    /// Creates route info from an `MKRoute`.
+    /// - Parameter polylineCoordinates: If provided, overrides the geometry used for drawing/camera fitting,
+    ///   while still keeping `expectedTravelTime` and `distance` from the underlying `MKRoute`.
+    init(route: MKRoute, polylineCoordinates: [CLLocationCoordinate2D]? = nil) {
         self.id = UUID()
         self.expectedTravelTime = route.expectedTravelTime
         self.distance = route.distance
         self.route = route
-        self.polylineCoordinates = route.polyline.coordinatesArray
+        self.polylineCoordinates = polylineCoordinates ?? route.polyline.coordinatesArray
     }
 }
 
@@ -66,6 +69,39 @@ enum MapMode: Equatable, Sendable {
     case browse
     case selectingDestination
     case viewingRoute
+}
+
+enum MapDisplayType: String, CaseIterable, Sendable {
+    case standard
+    case hybrid
+    case imagery
+
+    var iconName: String {
+        switch self {
+        case .standard:
+            return "map"
+        case .hybrid:
+            return "map.fill"
+        case .imagery:
+            return "globe.americas.fill"
+        }
+    }
+
+    func next() -> MapDisplayType {
+        switch self {
+        case .standard:
+            return .hybrid
+        case .hybrid:
+            return .imagery
+        case .imagery:
+            return .standard
+        }
+    }
+}
+
+enum MapThemeMode: String, Sendable {
+    case day
+    case night
 }
 
 
