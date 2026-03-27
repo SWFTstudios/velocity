@@ -16,18 +16,26 @@ struct TripSetupFloatingSheetView: View {
     var onConfirmTrip: (() -> Void)?
 
     var body: some View {
-        VStack(alignment: .leading, spacing: VelocitySpacing.lg) {
+        VStack(alignment: .leading, spacing: 0) {
             sheetHeader
+                .padding(.bottom, VelocitySpacing.sm)
 
-            destinationCard
+            ScrollView {
+                VStack(alignment: .leading, spacing: VelocitySpacing.lg) {
+                    destinationCard
 
-            transitModePicker
+                    transitModePicker
 
-            wakeRadiusSection
+                    wakeRadiusSection
+                }
+            }
 
             confirmButton
+                .padding(.top, VelocitySpacing.md)
         }
-        .padding(VelocitySpacing.md)
+        .padding(.horizontal, VelocitySpacing.md)
+        .padding(.top, VelocitySpacing.xl)
+        .padding(.bottom, VelocitySpacing.md)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(VelocityColor.surface.ignoresSafeArea())
         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))

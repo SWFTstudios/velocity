@@ -70,7 +70,8 @@ struct MapScreen: View {
                 }
             }
             .mapStyle(configuredMapStyle)
-            .preferredColorScheme(viewModel.isNightModeActive ? .dark : .light)
+            .environment(\.colorScheme, viewModel.isNightModeActive ? .dark : .light)
+            .id("\(viewModel.mapDisplayType.rawValue)-\(viewModel.mapThemeMode.rawValue)")
             .onMapCameraChange(frequency: .onEnd) {
                 viewModel.userDidManuallyAdjustCamera()
             }
@@ -262,7 +263,7 @@ struct MapScreen: View {
     private var distanceLine: String {
         let dist = tripStore.session.distanceDisplay
         if !dist.isEmpty && dist != "—" {
-            return dist
+            return "Distance: \(dist)"
         }
         if let title = tripStore.session.destination?.title {
             return title
@@ -271,9 +272,14 @@ struct MapScreen: View {
     }
 
     private var configuredMapStyle: MapStyle {
+        let isNight = viewModel.isNightModeActive
         switch viewModel.mapDisplayType {
         case .standard:
-            return .standard(elevation: .realistic, emphasis: .muted, pointsOfInterest: .excludingAll)
+            return .standard(
+                elevation: .realistic,
+                emphasis: isNight ? .muted : .automatic,
+                pointsOfInterest: .excludingAll
+            )
         case .hybrid:
             return .hybrid(elevation: .realistic, pointsOfInterest: .excludingAll)
         case .imagery:
