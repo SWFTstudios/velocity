@@ -9,11 +9,11 @@ struct MapControlsView: View {
     let mapDisplayType: MapDisplayType
     let isFollowingUser: Bool
     let isNightMode: Bool
-    let showsClearDestination: Bool
     let onCycleMapType: () -> Void
     let onCenterOrFollowToggle: () -> Void
     let onToggleTheme: () -> Void
-    let onClearDestination: () -> Void
+    let onOpenSounds: () -> Void
+    let onOpenSettings: () -> Void
 
     var body: some View {
         VStack(spacing: VelocitySpacing.sm) {
@@ -34,13 +34,12 @@ struct MapControlsView: View {
             )
             .accessibilityLabel(isNightMode ? "Switch to day map theme" : "Switch to night map theme")
 
-            if showsClearDestination {
-                mapButton(icon: "xmark.circle.fill", isActive: false, action: onClearDestination)
-                    .accessibilityLabel("Clear destination")
-                    .transition(.scale.combined(with: .opacity))
-            }
+            mapButton(icon: "waveform", isActive: false, action: onOpenSounds)
+                .accessibilityLabel("Sleep sounds")
+
+            mapButton(icon: "gearshape.fill", isActive: false, action: onOpenSettings)
+                .accessibilityLabel("Settings")
         }
-        .animation(.easeInOut(duration: 0.22), value: showsClearDestination)
         .animation(.easeInOut(duration: 0.22), value: isFollowingUser)
         .animation(.easeInOut(duration: 0.22), value: isNightMode)
     }
@@ -53,7 +52,7 @@ struct MapControlsView: View {
                 .frame(width: 44, height: 44)
                 .background(
                     Circle()
-                        .fill(VelocityColor.surfaceContainerLowest.opacity(0.95))
+                        .fill(VelocityColor.surfaceContainerHigh.opacity(0.96))
                 )
                 .overlay(
                     Circle()
@@ -68,4 +67,3 @@ struct MapControlsView: View {
         .animation(.easeInOut(duration: 0.22), value: isActive)
     }
 }
-

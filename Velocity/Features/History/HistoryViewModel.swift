@@ -26,5 +26,9 @@ final class HistoryViewModel {
     func clearAll() {
         historyStore.clearAll()
     }
+
+    func refresh() {
+        historyStore.reloadFromPersistence()
+    }
 }
 

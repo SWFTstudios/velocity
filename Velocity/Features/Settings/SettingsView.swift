@@ -7,6 +7,12 @@ import SwiftUI
 
 struct SettingsView: View {
     @Bindable var settingsStore: UserSettingsStore
+    var historyViewModel: HistoryViewModel?
+
+    init(settingsStore: UserSettingsStore, historyViewModel: HistoryViewModel? = nil) {
+        self.settingsStore = settingsStore
+        self.historyViewModel = historyViewModel
+    }
 
     var body: some View {
         List {
@@ -37,6 +43,16 @@ struct SettingsView: View {
                         .fill(LinearGradient.velocityPrimaryCTA)
                 )
                 .listRowBackground(Color.clear)
+            }
+
+            if let historyViewModel {
+                Section {
+                    NavigationLink {
+                        HistoryView(viewModel: historyViewModel)
+                    } label: {
+                        Label("Trip history", systemImage: "clock.arrow.circlepath")
+                    }
+                }
             }
 
             Section("App preferences") {

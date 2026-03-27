@@ -8,6 +8,8 @@ import SwiftUI
 struct HomeTabRootView: View {
     @Bindable var tripStore: TripSessionStore
     @Bindable var settingsStore: UserSettingsStore
+    var onOpenSounds: () -> Void
+    var onOpenSettings: () -> Void
     @State private var path = NavigationPath()
     @State private var mapViewModel: MapViewModel
     @State private var showsLocationSearchModal = false
@@ -32,19 +34,22 @@ struct HomeTabRootView: View {
         )
     }
 
-    private var showTripSetupReshowCTA: Bool {
-        tripStore.session.destination != nil && tripStore.session.status == .planning && mapFlowState == .noInput
-    }
-
     private var showTripProgressReshowCTA: Bool {
         tripStore.session.status != .idle
             && tripStore.session.status != .planning
             && mapFlowState == .tripProgressHidden
     }
 
-    init(tripStore: TripSessionStore, settingsStore: UserSettingsStore) {
+    init(
+        tripStore: TripSessionStore,
+        settingsStore: UserSettingsStore,
+        onOpenSounds: @escaping () -> Void = {},
+        onOpenSettings: @escaping () -> Void = {}
+    ) {
         self.tripStore = tripStore
         self.settingsStore = settingsStore
+        self.onOpenSounds = onOpenSounds
+        self.onOpenSettings = onOpenSettings
         _mapViewModel = State(initialValue: MapViewModel(tripStore: tripStore))
     }
 
@@ -58,8 +63,9 @@ struct HomeTabRootView: View {
                     showsLocationSearchModal = true
                     mapFlowState = .searching
                 },
-                showTripSetupReshowCTA: showTripSetupReshowCTA,
-                onTripSetupReshowTapped: {
+                onOpenSounds: onOpenSounds,
+                onOpenSettings: onOpenSettings,
+                onOpenTripSetup: {
                     mapFlowState = .tripSetup
                     mapViewModel.beginTripSetupSheetPresentation()
                 }
@@ -85,10 +91,16 @@ struct HomeTabRootView: View {
                         tripStore: tripStore,
                         settingsStore: settingsStore,
                         mapViewModel: mapViewModel,
-                        onDismiss: { showsLocationSearchModal = false }
+                        onDismiss: {
+                            showsLocationSearchModal = false
+                            if mapFlowState == .searching {
+                                mapFlowState = .noInput
+                            }
+                        }
                     )
-                    .presentationDetents([.large])
+                    .presentationDetents([.medium, .large])
                     .presentationDragIndicator(.visible)
+                    .presentationCornerRadius(22)
                 }
                 .sheet(isPresented: tripSheetBinding) {
                     DynamicSheet(maxHeight: UIScreen.main.bounds.height * 0.5) {
@@ -130,16 +142,15 @@ struct HomeTabRootView: View {
                         mapFlowState = .noInput
                         return
                     }
-                    // Selecting a destination always moves the app into trip setup.
                     if tripStore.session.status == .planning || tripStore.session.status == .idle {
-                        mapFlowState = .tripSetup
+                        mapFlowState = .noInput
                     }
                 }
                 .onChange(of: tripStore.session.status) { _, newStatus in
                     if newStatus == .idle {
                         mapFlowState = .noInput
                     } else if newStatus == .planning {
-                        mapFlowState = .tripSetup
+                        mapFlowState = .noInput
                     } else if newStatus == .active || newStatus == .waking || newStatus == .paused {
                         if mapFlowState != .tripProgressHidden {
                             mapFlowState = .tripProgressShown

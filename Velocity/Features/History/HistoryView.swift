@@ -51,10 +51,29 @@ struct HistoryView: View {
                 .background(VelocityColor.surface.ignoresSafeArea())
             }
         }
-        .navigationTitle("History")
+        .navigationTitle("Trip history")
         .toolbar {
-            if viewModel.hasRecords {
-                ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItemGroup(placement: .topBarTrailing) {
+                Button {
+                    viewModel.refresh()
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                }
+                .accessibilityLabel("Refresh history")
+
+                if viewModel.hasRecords {
+                    ShareLink(item: shareSummaryText) {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                    .accessibilityLabel("Share history summary")
+
+                    Button {
+                        // Placeholder: deep link to sleep sounds when surfaced from root.
+                    } label: {
+                        Image(systemName: "bed.double.fill")
+                    }
+                    .accessibilityLabel("Sleep")
+
                     Button("Clear") {
                         viewModel.clearAll()
                     }
@@ -62,6 +81,11 @@ struct HistoryView: View {
                 }
             }
         }
+    }
+
+    private var shareSummaryText: String {
+        let count = viewModel.records.count
+        return "Velocity trip history: \(count) trip\(count == 1 ? "" : "s")"
     }
 
     private func durationText(_ seconds: TimeInterval) -> String {
@@ -89,4 +113,3 @@ struct HistoryView: View {
         HistoryView(viewModel: HistoryViewModel(historyStore: TripHistoryStore()))
     }
 }
-

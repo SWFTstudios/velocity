@@ -232,6 +232,9 @@ struct UserSettings: Equatable, Codable {
     var theme: AppTheme
     var colorway: AppColorway
     var measurementUnit: MeasurementUnit
+    var preferredSleepSoundID: String?
+    var sleepSoundVolume: Double
+    var sleepSoundLoopEnabled: Bool
     /// Default alarm radius applied when starting a new trip in `.planning`.
     /// Stored in kilometers to avoid unit-coupling.
     var defaultWakeRadiusKilometers: Double
@@ -242,6 +245,9 @@ struct UserSettings: Equatable, Codable {
         theme: .system,
         colorway: .midnightCalm,
         measurementUnit: .kilometers,
+        preferredSleepSoundID: nil,
+        sleepSoundVolume: 0.7,
+        sleepSoundLoopEnabled: true,
         defaultWakeRadiusKilometers: 0.3 * 1.609344 // 0.3 mi
     )
 
@@ -251,6 +257,9 @@ struct UserSettings: Equatable, Codable {
         theme: AppTheme,
         colorway: AppColorway,
         measurementUnit: MeasurementUnit,
+        preferredSleepSoundID: String?,
+        sleepSoundVolume: Double,
+        sleepSoundLoopEnabled: Bool,
         defaultWakeRadiusKilometers: Double
     ) {
         self.notificationsEnabled = notificationsEnabled
@@ -258,6 +267,9 @@ struct UserSettings: Equatable, Codable {
         self.theme = theme
         self.colorway = colorway
         self.measurementUnit = measurementUnit
+        self.preferredSleepSoundID = preferredSleepSoundID
+        self.sleepSoundVolume = sleepSoundVolume
+        self.sleepSoundLoopEnabled = sleepSoundLoopEnabled
         self.defaultWakeRadiusKilometers = defaultWakeRadiusKilometers
     }
 
@@ -267,6 +279,9 @@ struct UserSettings: Equatable, Codable {
         case theme
         case colorway
         case measurementUnit
+        case preferredSleepSoundID
+        case sleepSoundVolume
+        case sleepSoundLoopEnabled
         case defaultWakeRadiusKilometers
     }
 
@@ -277,6 +292,9 @@ struct UserSettings: Equatable, Codable {
         theme = try container.decode(AppTheme.self, forKey: .theme)
         colorway = try container.decodeIfPresent(AppColorway.self, forKey: .colorway) ?? .midnightCalm
         measurementUnit = try container.decodeIfPresent(MeasurementUnit.self, forKey: .measurementUnit) ?? .kilometers
+        preferredSleepSoundID = try container.decodeIfPresent(String.self, forKey: .preferredSleepSoundID)
+        sleepSoundVolume = try container.decodeIfPresent(Double.self, forKey: .sleepSoundVolume) ?? 0.7
+        sleepSoundLoopEnabled = try container.decodeIfPresent(Bool.self, forKey: .sleepSoundLoopEnabled) ?? true
         defaultWakeRadiusKilometers = try container.decodeIfPresent(Double.self, forKey: .defaultWakeRadiusKilometers) ?? (0.3 * 1.609344)
     }
 }

@@ -60,6 +60,21 @@ final class UserSettingsStore {
         persist()
     }
 
+    func setPreferredSleepSoundID(_ id: String?) {
+        settings.preferredSleepSoundID = id
+        persist()
+    }
+
+    func setSleepSoundVolume(_ volume: Double) {
+        settings.sleepSoundVolume = max(0, min(1, volume))
+        persist()
+    }
+
+    func setSleepSoundLoopEnabled(_ enabled: Bool) {
+        settings.sleepSoundLoopEnabled = enabled
+        persist()
+    }
+
     func setDefaultWakeRadiusKilometers(_ kilometers: Double) {
         settings.defaultWakeRadiusKilometers = kilometers
         persist()

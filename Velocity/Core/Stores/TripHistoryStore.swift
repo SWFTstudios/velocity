@@ -26,6 +26,10 @@ final class TripHistoryStore {
         persist()
     }
 
+    func reloadFromPersistence() {
+        records = Self.load()
+    }
+
     private func persist() {
         do {
             let data = try JSONEncoder().encode(records)
