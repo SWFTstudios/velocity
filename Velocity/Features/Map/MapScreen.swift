@@ -18,10 +18,23 @@ struct MapScreen: View {
     var onOpenSounds: () -> Void = {}
     var onOpenSettings: () -> Void = {}
     var onOpenTripSetup: () -> Void = {}
+    var showTripProgressReshowCTA: Bool = false
+    var onTripProgressReshowTapped: () -> Void = {}
     @State private var pendingPressPoint: CGPoint?
 
     private var showsPlanningSummaryBar: Bool {
         tripStore.session.status == .planning && tripStore.session.destination != nil
+    }
+
+    private var showsActiveTripMapChrome: Bool {
+        switch tripStore.session.status {
+        case .active, .paused, .waking: true
+        default: false
+        }
+    }
+
+    private var activeRouteCoords: [CLLocationCoordinate2D] {
+        viewModel.activeRouteCoordinates
     }
 
     var body: some View {
@@ -64,8 +77,8 @@ struct MapScreen: View {
                     }
                 }
 
-                if let route = viewModel.currentRoute {
-                    MapPolyline(coordinates: route.polylineCoordinates)
+                if activeRouteCoords.count >= 2 {
+                    MapPolyline(coordinates: activeRouteCoords)
                         .stroke(VelocityColor.primary, lineWidth: 5)
                 }
             }
@@ -92,9 +105,20 @@ struct MapScreen: View {
                     }
             )
         }
+        .onGeometryChange(for: CGFloat.self) { proxy in
+            proxy.size.height
+        } action: { _, height in
+            viewModel.mapViewportHeightPoints = height
+        }
         .ignoresSafeArea(edges: .top)
         .overlay(alignment: .topTrailing) { mapControls }
-        .overlay(alignment: .bottom) { bottomPanel }
+        .overlay(alignment: .top) {
+            if showsActiveTripMapChrome {
+                activeTripSummaryCard
+                    .padding(.top, 8)
+            }
+        }
+        .overlay(alignment: .bottom) { bottomStack }
         .overlay(alignment: .top) {
             if let notice = viewModel.reducedAccuracyNotice {
                 Text(notice)
@@ -115,6 +139,153 @@ struct MapScreen: View {
         }
     }
 
+    private var bottomStack: some View {
+        VStack(spacing: VelocitySpacing.sm) {
+            if showsActiveTripMapChrome {
+                Text(tripStore.session.wakeRadiusBadgeText)
+                    .font(VelocityFontStyle.label(11))
+                    .foregroundStyle(VelocityColor.onSurface)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(VelocityColor.surfaceContainer.opacity(0.92))
+                    .clipShape(Capsule())
+
+                if showTripProgressReshowCTA {
+                    Button {
+                        onTripProgressReshowTapped()
+                    } label: {
+                        HStack(spacing: VelocitySpacing.sm) {
+                            Image(systemName: "timer.circle.fill")
+                                .foregroundStyle(VelocityColor.onSurfaceVariant)
+                            Text("Trip progress")
+                                .font(VelocityFontStyle.body(14))
+                                .foregroundStyle(VelocityColor.onSurface)
+                        }
+                        .padding(.horizontal, VelocitySpacing.md)
+                        .padding(.vertical, 10)
+                        .background(VelocityColor.surfaceContainerHighest.opacity(0.92))
+                        .clipShape(Capsule())
+                    }
+                    .buttonStyle(.plain)
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+                }
+
+                activeTripControls
+            }
+
+            bottomPanel
+        }
+        .animation(.easeInOut(duration: 0.2), value: showTripProgressReshowCTA)
+    }
+
+    private var activeTripSummaryCard: some View {
+        VStack(alignment: .leading, spacing: VelocitySpacing.md) {
+            HStack {
+                Text("NEXT STOP")
+                    .font(VelocityFontStyle.label(10))
+                    .foregroundStyle(VelocityColor.primary)
+                Spacer()
+                Text(tripStore.session.onTrackLabel)
+                    .font(VelocityFontStyle.label(10))
+                    .foregroundStyle(VelocityColor.onSurface)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 4)
+                    .background(VelocityColor.surfaceContainerHighest)
+                    .clipShape(Capsule())
+            }
+            Text(tripStore.session.nextStopName)
+                .font(VelocityFontStyle.headline(22))
+                .foregroundStyle(VelocityColor.onSurface)
+            HStack(spacing: VelocitySpacing.lg) {
+                activeTripEtaColumn
+                activeTripDistanceColumn
+            }
+        }
+        .padding(VelocitySpacing.md)
+        .background(VelocityColor.surfaceContainer.opacity(0.95))
+        .clipShape(RoundedRectangle(cornerRadius: VelocityRadius.card, style: .continuous))
+        .padding(.horizontal, VelocitySpacing.md)
+    }
+
+    private var activeTripEtaColumn: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "clock.fill")
+                .foregroundStyle(VelocityColor.primary)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("ETA")
+                    .font(VelocityFontStyle.label(10))
+                    .foregroundStyle(VelocityColor.onSurfaceVariant)
+                Text(tripStore.session.etaDisplay)
+                    .font(VelocityFontStyle.title(16))
+                    .foregroundStyle(VelocityColor.onSurface)
+            }
+        }
+    }
+
+    private var activeTripDistanceColumn: some View {
+        HStack(spacing: 10) {
+            Image(systemName: "ruler.fill")
+                .foregroundStyle(VelocityColor.primary)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Distance")
+                    .font(VelocityFontStyle.label(10))
+                    .foregroundStyle(VelocityColor.onSurfaceVariant)
+                Text(tripStore.session.distanceDisplay)
+                    .font(VelocityFontStyle.title(16))
+                    .foregroundStyle(VelocityColor.onSurface)
+            }
+        }
+    }
+
+    private var activeTripControls: some View {
+        VStack(spacing: VelocitySpacing.sm) {
+            HStack(spacing: VelocitySpacing.md) {
+                Button {
+                    if tripStore.session.status == .active {
+                        tripStore.pauseTrip()
+                    } else if tripStore.session.status == .paused {
+                        tripStore.resumeTrip()
+                    }
+                } label: {
+                    Label(
+                        tripStore.session.status == .paused ? "Resume" : "Pause",
+                        systemImage: tripStore.session.status == .paused ? "play.fill" : "pause.fill"
+                    )
+                    .font(VelocityFontStyle.title(15))
+                    .foregroundStyle(VelocityColor.onSurface)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(VelocityColor.surfaceContainerHighest)
+                    .clipShape(RoundedRectangle(cornerRadius: VelocityRadius.card, style: .continuous))
+                }
+
+                Button {
+                    tripStore.completeTrip(wasAwakened: false)
+                } label: {
+                    Label("End trip", systemImage: "stop.fill")
+                        .font(VelocityFontStyle.title(15))
+                        .foregroundStyle(VelocityColor.onPrimaryFixed)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 16)
+                        .background(
+                            RoundedRectangle(cornerRadius: VelocityRadius.card, style: .continuous)
+                                .fill(LinearGradient.velocityPrimaryCTA)
+                        )
+                }
+            }
+
+            Button("Simulate approaching destination") {
+                tripStore.triggerWake(reason: .manual)
+            }
+            .font(VelocityFontStyle.body(14))
+            .foregroundStyle(VelocityColor.secondary)
+        }
+        .padding(.horizontal, VelocitySpacing.md)
+        .padding(.bottom, VelocitySpacing.sm)
+        .padding(.top, VelocitySpacing.sm)
+        .background(VelocityColor.surface.opacity(0.94))
+    }
+
     private var mapControls: some View {
         MapControlsView(
             mapDisplayType: viewModel.mapDisplayType,
@@ -128,7 +299,7 @@ struct MapScreen: View {
                         viewModel.enterBrowseMode()
                     } else if tripStore.session.destination != nil {
                         // Destination/trip selected: center on the trip context first, then enable follow mode.
-                        if viewModel.currentRoute != nil {
+                        if viewModel.activeRouteCoordinates.count >= 2 {
                             viewModel.fitCameraToRoute()
                         } else {
                             viewModel.fitCameraToUserAndDestination()

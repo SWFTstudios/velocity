@@ -68,20 +68,14 @@ struct HomeTabRootView: View {
                 onOpenTripSetup: {
                     mapFlowState = .tripSetup
                     mapViewModel.beginTripSetupSheetPresentation()
+                },
+                showTripProgressReshowCTA: showTripProgressReshowCTA,
+                onTripProgressReshowTapped: {
+                    mapFlowState = .tripProgressShown
                 }
             )
                 .navigationDestination(for: HomeRoute.self) { route in
                     switch route {
-                    case .activeTrip:
-                        ActiveTripMapView(
-                            tripStore: tripStore,
-                            path: $path,
-                            mapViewModel: mapViewModel,
-                            showTripProgressReshowCTA: showTripProgressReshowCTA,
-                            onTripProgressReshowTapped: {
-                                mapFlowState = .tripProgressShown
-                            }
-                        )
                     case .wakeAlert:
                         WakeAlertView(tripStore: tripStore, path: $path)
                     }
@@ -103,7 +97,11 @@ struct HomeTabRootView: View {
                     .presentationCornerRadius(22)
                 }
                 .sheet(isPresented: tripSheetBinding) {
-                    DynamicSheet(maxHeight: UIScreen.main.bounds.height * 0.5) {
+                    DynamicSheet(
+                        onPresentedHeightChange: { totalBottomInset in
+                            mapViewModel.bottomSheetInsetPoints = totalBottomInset
+                        }
+                    ) {
                         if mapFlowState == .tripSetup || tripStore.session.status == .planning {
                             TripSetupFloatingSheetView(
                                 tripStore: tripStore,
@@ -115,11 +113,11 @@ struct HomeTabRootView: View {
                                 },
                                 onConfirmTrip: {
                                     mapFlowState = .tripProgressShown
-                                    path.append(HomeRoute.activeTrip)
                                 }
                             )
                         } else {
                             TripProgressView(tripStore: tripStore) {
+                                mapFlowState = .noInput
                                 path = NavigationPath()
                             }
                         }
@@ -127,13 +125,12 @@ struct HomeTabRootView: View {
                     .presentationBackgroundInteraction(.enabled)
                     .presentationCornerRadius(22)
                     .onAppear {
-                        // Only suppress search suggestions during trip setup on the Home map.
                         if tripStore.session.status == .planning {
                             mapViewModel.beginTripSetupSheetPresentation()
                         }
                     }
                     .onDisappear {
-                        // Restore the captured map UI state when the entire trip sheet is dismissed.
+                        mapViewModel.bottomSheetInsetPoints = 0
                         mapViewModel.endTripSetupSheetPresentation()
                     }
                 }
@@ -154,6 +151,9 @@ struct HomeTabRootView: View {
                     } else if newStatus == .active || newStatus == .waking || newStatus == .paused {
                         if mapFlowState != .tripProgressHidden {
                             mapFlowState = .tripProgressShown
+                        }
+                        if newStatus == .active {
+                            mapViewModel.fitCameraToRoute()
                         }
                     }
                 }

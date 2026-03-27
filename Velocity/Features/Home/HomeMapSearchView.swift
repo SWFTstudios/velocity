@@ -13,6 +13,8 @@ struct HomeMapSearchView: View {
     var onOpenSounds: () -> Void
     var onOpenSettings: () -> Void
     var onOpenTripSetup: () -> Void
+    var showTripProgressReshowCTA: Bool = false
+    var onTripProgressReshowTapped: () -> Void = {}
 
     var body: some View {
         MapScreen(
@@ -22,7 +24,9 @@ struct HomeMapSearchView: View {
             onSearchTapped: onSearchTapped,
             onOpenSounds: onOpenSounds,
             onOpenSettings: onOpenSettings,
-            onOpenTripSetup: onOpenTripSetup
+            onOpenTripSetup: onOpenTripSetup,
+            showTripProgressReshowCTA: showTripProgressReshowCTA,
+            onTripProgressReshowTapped: onTripProgressReshowTapped
         )
         .background(VelocityColor.surface)
         .toolbar(.hidden, for: .navigationBar)
