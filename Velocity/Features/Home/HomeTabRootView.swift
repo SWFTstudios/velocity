@@ -68,6 +68,10 @@ struct HomeTabRootView: View {
                 onOpenTripSetup: {
                     mapFlowState = .tripSetup
                     mapViewModel.beginTripSetupSheetPresentation()
+                },
+                showTripProgressReshowCTA: showTripProgressReshowCTA,
+                onTripProgressReshowTapped: {
+                    mapFlowState = .tripProgressShown
                 }
             )
                 .navigationDestination(for: HomeRoute.self) { route in
@@ -115,11 +119,11 @@ struct HomeTabRootView: View {
                                 },
                                 onConfirmTrip: {
                                     mapFlowState = .tripProgressShown
-                                    path.append(HomeRoute.activeTrip)
                                 }
                             )
                         } else {
                             TripProgressView(tripStore: tripStore) {
+                                mapFlowState = .noInput
                                 path = NavigationPath()
                             }
                         }

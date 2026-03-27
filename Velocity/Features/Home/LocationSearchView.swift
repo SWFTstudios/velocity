@@ -165,21 +165,15 @@ struct LocationSearchView: View {
                     mapViewModel.selectSearchCompletion(item)
                     onDismiss?()
                 } label: {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(item.title)
-                            .font(VelocityFontStyle.body())
-                            .foregroundStyle(VelocityColor.onSurface)
-                        if !item.subtitle.isEmpty {
-                            Text(item.subtitle)
-                                .font(VelocityFontStyle.body(12))
-                                .foregroundStyle(VelocityColor.onSurfaceVariant)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.vertical, 12)
-                    .padding(.horizontal, VelocitySpacing.md)
+                    SearchCompletionRow(title: item.title, subtitle: item.subtitle)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, VelocitySpacing.md)
                 }
-                Divider().opacity(0.3)
+                .buttonStyle(.plain)
+
+                Divider()
+                    .opacity(0.28)
             }
         }
         .padding(.top, VelocitySpacing.sm)
@@ -198,6 +192,44 @@ struct LocationSearchView: View {
             .foregroundStyle(VelocityColor.onSurfaceVariant)
             .padding(.top, VelocitySpacing.lg)
             .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct SearchCompletionRow: View {
+    var title: String
+    var subtitle: String
+
+    private static let pinGradient = LinearGradient(
+        colors: [VelocityColor.primary, VelocityColor.onPrimaryContainer],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+
+    var body: some View {
+        HStack(alignment: .center, spacing: VelocitySpacing.md) {
+            ZStack {
+                Circle()
+                    .fill(Self.pinGradient)
+                    .frame(width: 40, height: 40)
+                Image(systemName: "mappin")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(.white)
+            }
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(VelocityFontStyle.body(16))
+                    .fontWeight(.semibold)
+                    .foregroundStyle(VelocityColor.onSurface)
+                if !subtitle.isEmpty {
+                    Text(subtitle)
+                        .font(VelocityFontStyle.body(12))
+                        .foregroundStyle(VelocityColor.onSurfaceVariant)
+                }
+            }
+
+            Spacer(minLength: 0)
+        }
     }
 }
 
