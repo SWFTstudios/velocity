@@ -19,3 +19,6 @@ Package.resolved
 
 # Cursor — may contain API keys
 .cursor/mcp.json
+
+# Alarm call local runtime config
+Velocity/Core/Services/Alarm/AlarmCallConfig.local.json

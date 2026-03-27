@@ -8,10 +8,17 @@ import SwiftUI
 struct MainTabView: View {
     @Bindable var tripStore: TripSessionStore
     @Bindable var settingsStore: UserSettingsStore
+    @State private var historyViewModel: HistoryViewModel
+
+    init(tripStore: TripSessionStore, settingsStore: UserSettingsStore) {
+        self.tripStore = tripStore
+        self.settingsStore = settingsStore
+        _historyViewModel = State(initialValue: HistoryViewModel(historyStore: tripStore.historyStore))
+    }
 
     var body: some View {
         TabView {
-            HomeTabRootView(tripStore: tripStore)
+            HomeTabRootView(tripStore: tripStore, settingsStore: settingsStore)
                 .tabItem { Label("Home", systemImage: "map") }
 
             NavigationStack {
@@ -20,7 +27,7 @@ struct MainTabView: View {
             .tabItem { Label("Sounds", systemImage: "waveform") }
 
             NavigationStack {
-                HistoryPlaceholderView()
+                HistoryView(viewModel: historyViewModel)
             }
             .tabItem { Label("History", systemImage: "clock.arrow.circlepath") }
 
