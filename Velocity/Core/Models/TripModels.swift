@@ -20,6 +20,14 @@ enum TransitMode: String, CaseIterable, Identifiable, Codable {
         case .bus: "Bus"
         }
     }
+
+    var mapSymbolName: String {
+        switch self {
+        case .train: "train.side.front.car"
+        case .car: "car.fill"
+        case .bus: "bus.fill"
+        }
+    }
 }
 
 enum WakeThreshold: Equatable, Codable {
@@ -222,6 +230,7 @@ struct UserSettings: Equatable, Codable {
     var notificationsEnabled: Bool
     var quietModeEnabled: Bool
     var theme: AppTheme
+    var colorway: AppColorway
     var measurementUnit: MeasurementUnit
     /// Default alarm radius applied when starting a new trip in `.planning`.
     /// Stored in kilometers to avoid unit-coupling.
@@ -231,6 +240,7 @@ struct UserSettings: Equatable, Codable {
         notificationsEnabled: true,
         quietModeEnabled: false,
         theme: .system,
+        colorway: .midnightCalm,
         measurementUnit: .kilometers,
         defaultWakeRadiusKilometers: 0.3 * 1.609344 // 0.3 mi
     )
@@ -239,12 +249,14 @@ struct UserSettings: Equatable, Codable {
         notificationsEnabled: Bool,
         quietModeEnabled: Bool,
         theme: AppTheme,
+        colorway: AppColorway,
         measurementUnit: MeasurementUnit,
         defaultWakeRadiusKilometers: Double
     ) {
         self.notificationsEnabled = notificationsEnabled
         self.quietModeEnabled = quietModeEnabled
         self.theme = theme
+        self.colorway = colorway
         self.measurementUnit = measurementUnit
         self.defaultWakeRadiusKilometers = defaultWakeRadiusKilometers
     }
@@ -253,6 +265,7 @@ struct UserSettings: Equatable, Codable {
         case notificationsEnabled
         case quietModeEnabled
         case theme
+        case colorway
         case measurementUnit
         case defaultWakeRadiusKilometers
     }
@@ -262,6 +275,7 @@ struct UserSettings: Equatable, Codable {
         notificationsEnabled = try container.decode(Bool.self, forKey: .notificationsEnabled)
         quietModeEnabled = try container.decode(Bool.self, forKey: .quietModeEnabled)
         theme = try container.decode(AppTheme.self, forKey: .theme)
+        colorway = try container.decodeIfPresent(AppColorway.self, forKey: .colorway) ?? .midnightCalm
         measurementUnit = try container.decodeIfPresent(MeasurementUnit.self, forKey: .measurementUnit) ?? .kilometers
         defaultWakeRadiusKilometers = try container.decodeIfPresent(Double.self, forKey: .defaultWakeRadiusKilometers) ?? (0.3 * 1.609344)
     }
@@ -296,6 +310,18 @@ enum AppTheme: String, CaseIterable, Codable {
         case .system: "System"
         case .light: "Light"
         case .darkOnly: "Midnight Calm"
+        }
+    }
+}
+
+enum AppColorway: String, CaseIterable, Codable {
+    case midnightCalm
+    case kineticHorizon
+
+    var displayName: String {
+        switch self {
+        case .midnightCalm: "Midnight Calm"
+        case .kineticHorizon: "Kinetic Horizon"
         }
     }
 }

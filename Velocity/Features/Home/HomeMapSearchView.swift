@@ -53,12 +53,12 @@ struct HomeMapSearchView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbarBackground(.visible, for: .navigationBar)
-        .toolbarBackground(Color(uiColor: .systemBackground), for: .navigationBar)
+        .toolbarBackground(VelocityColor.surface, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .principal) {
                 Text("Home")
                     .font(VelocityFontStyle.title(17))
-                    .foregroundStyle(.primary)
+                    .foregroundStyle(VelocityColor.onSurface)
             }
         }
     }

@@ -30,6 +30,7 @@ struct VelocityApp: App {
         WindowGroup {
             MainTabView(tripStore: tripSessionStore, settingsStore: userSettingsStore)
                 .preferredColorScheme(userSettingsStore.preferredColorScheme)
+                .id(userSettingsStore.settings.colorway)
         }
     }
 }

@@ -63,7 +63,7 @@ struct TripSetupFloatingSheetView: View {
                 .fill(VelocityColor.surfaceContainerHighest)
                 .frame(width: 48, height: 48)
                 .overlay {
-                    Image(systemName: "mappin.circle.fill")
+                    Image(systemName: tripStore.session.mode.mapSymbolName)
                         .font(.title2)
                         .foregroundStyle(VelocityColor.primary)
                 }

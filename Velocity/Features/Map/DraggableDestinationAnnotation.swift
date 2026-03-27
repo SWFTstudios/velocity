@@ -13,11 +13,20 @@ import SwiftUI
 struct DraggableDestinationAnnotation: View {
     let proxy: MapProxy
     @Bindable var viewModel: MapViewModel
+    let symbolName: String
 
     var body: some View {
-        Image(systemName: "mappin.circle.fill")
-            .font(.system(size: 36))
-            .foregroundStyle(VelocityColor.primary)
+        ZStack {
+            Circle()
+                .fill(VelocityColor.surfaceContainerHighest.opacity(0.96))
+                .frame(width: 28, height: 28)
+            Circle()
+                .stroke(VelocityColor.primary, lineWidth: 2)
+                .frame(width: 28, height: 28)
+            Image(systemName: symbolName)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(VelocityColor.primary)
+        }
             .shadow(color: .black.opacity(0.35), radius: 3, y: 2)
             .accessibilityLabel("Destination")
             .accessibilityHint("Drag to move your destination")

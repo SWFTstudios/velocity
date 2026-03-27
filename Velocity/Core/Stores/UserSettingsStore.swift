@@ -50,6 +50,11 @@ final class UserSettingsStore {
         persist()
     }
 
+    func setColorway(_ colorway: AppColorway) {
+        settings.colorway = colorway
+        persist()
+    }
+
     func setMeasurementUnit(_ unit: MeasurementUnit) {
         settings.measurementUnit = unit
         persist()
@@ -74,6 +79,14 @@ final class UserSettingsStore {
             return 0.3 * 1.609344 // 0.3 mi -> km
         }
         return decoded.defaultWakeRadiusKilometers
+    }
+
+    nonisolated static func currentColorway() -> AppColorway {
+        guard let data = UserDefaults.standard.data(forKey: UserSettingsKeys.payload),
+              let decoded = try? JSONDecoder().decode(UserSettings.self, from: data) else {
+            return .midnightCalm
+        }
+        return decoded.colorway
     }
 
     private func persist() {

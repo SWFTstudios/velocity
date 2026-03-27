@@ -30,7 +30,7 @@ struct WakeAlertView: View {
         )
         .navigationTitle("Wake-up alert")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(Color(uiColor: .systemBackground), for: .navigationBar)
+        .toolbarBackground(VelocityColor.surface, for: .navigationBar)
     }
 
     private var progressBar: some View {

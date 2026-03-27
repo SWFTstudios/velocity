@@ -48,7 +48,7 @@ struct SettingsView: View {
                         Text("Notifications")
                         Text("Smart wake-up and reminders")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(VelocityColor.onSurfaceVariant)
                     }
                 }
                 .tint(VelocityColor.primary)
@@ -61,16 +61,16 @@ struct SettingsView: View {
                         Text("Quiet mode")
                         Text("Silence all but emergency alarms")
                             .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .foregroundStyle(VelocityColor.onSurfaceVariant)
                     }
                 }
 
                 Picker("Theme", selection: Binding(
-                    get: { settingsStore.settings.theme },
-                    set: { settingsStore.setTheme($0) }
+                    get: { settingsStore.settings.colorway },
+                    set: { settingsStore.setColorway($0) }
                 )) {
-                    ForEach(AppTheme.allCases, id: \.self) { theme in
-                        Text(theme.displayName).tag(theme)
+                    ForEach(AppColorway.allCases, id: \.self) { colorway in
+                        Text(colorway.displayName).tag(colorway)
                     }
                 }
 

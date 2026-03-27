@@ -50,7 +50,7 @@ struct SleepSoundsLibraryView: View {
         .background(VelocityColor.surface.ignoresSafeArea())
         .navigationTitle("Sleep sounds")
         .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(Color(uiColor: .systemBackground), for: .navigationBar)
+        .toolbarBackground(VelocityColor.surface, for: .navigationBar)
     }
 
     private var featuredCard: some View {

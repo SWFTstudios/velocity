@@ -79,7 +79,7 @@ struct ActiveTripMapView: View {
         .navigationTitle("Sleep map / route")
         .navigationBarTitleDisplayMode(.inline)
         .navigationBarBackButtonHidden(true)
-        .toolbarBackground(Color(uiColor: .systemBackground), for: .navigationBar)
+        .toolbarBackground(VelocityColor.surface, for: .navigationBar)
         .onAppear {
             mapViewModel.onSceneActive()
             mapViewModel.fitCameraToRoute()

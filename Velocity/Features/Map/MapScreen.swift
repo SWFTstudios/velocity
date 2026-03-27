@@ -25,13 +25,25 @@ struct MapScreen: View {
                 if let dest = viewModel.displayDestinationCoordinate {
                     if tripStore.session.status == .planning {
                         Annotation("Destination", coordinate: dest) {
-                            DraggableDestinationAnnotation(proxy: proxy, viewModel: viewModel)
+                            DraggableDestinationAnnotation(
+                                proxy: proxy,
+                                viewModel: viewModel,
+                                symbolName: tripStore.session.mode.mapSymbolName
+                            )
                         }
                     } else {
                         Annotation("Destination", coordinate: dest) {
-                            Image(systemName: "mappin.circle.fill")
-                                .font(.system(size: 36))
-                                .foregroundStyle(VelocityColor.primary)
+                            ZStack {
+                                Circle()
+                                    .fill(VelocityColor.surfaceContainerHighest.opacity(0.96))
+                                    .frame(width: 28, height: 28)
+                                Circle()
+                                    .stroke(VelocityColor.primary, lineWidth: 2)
+                                    .frame(width: 28, height: 28)
+                                Image(systemName: tripStore.session.mode.mapSymbolName)
+                                    .font(.system(size: 12, weight: .semibold))
+                                    .foregroundStyle(VelocityColor.primary)
+                            }
                                 .shadow(color: .black.opacity(0.35), radius: 3, y: 2)
                                 .accessibilityLabel("Destination")
                         }
