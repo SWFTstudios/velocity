@@ -43,7 +43,9 @@ struct HomeMapSearchView: View {
             onSearchTapped: {},
             onOpenSounds: {},
             onOpenSettings: {},
-            onOpenTripSetup: {}
+            onOpenTripSetup: {},
+            showTripProgressReshowCTA: false,
+            onTripProgressReshowTapped: {}
         )
     }
 }
