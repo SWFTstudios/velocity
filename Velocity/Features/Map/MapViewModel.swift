@@ -76,6 +76,11 @@ final class MapViewModel {
     var lookAroundScene: MKLookAroundScene?
     var isLookAroundLoading: Bool = false
 
+    /// Bottom occlusion in points (trip sheet height + home indicator) while the trip sheet is presented.
+    var bottomSheetInsetPoints: CGFloat = 0
+    /// Full map view height from `MapScreen` geometry (used to scale camera nudge vs visible map band).
+    var mapViewportHeightPoints: CGFloat = 700
+
     private var followCameraTimerCancellable: AnyCancellable?
     private var routeGeneration: Int = 0
     private var geocodeGeneration: Int = 0
@@ -233,6 +238,20 @@ final class MapViewModel {
         cameraPosition = position
     }
 
+    private func nudgeRegionForBottomSheet(_ region: MKCoordinateRegion) -> MKCoordinateRegion {
+        guard bottomSheetInsetPoints > 1 else { return region }
+        let visible = max(mapViewportHeightPoints - bottomSheetInsetPoints, 200)
+        let fraction = bottomSheetInsetPoints / visible
+        let adjust = region.span.latitudeDelta * fraction * 0.38
+        var next = region
+        next.center.latitude -= adjust
+        return next
+    }
+
+    private func setProgrammaticCameraToRegion(_ region: MKCoordinateRegion) {
+        setProgrammaticCamera(.region(nudgeRegionForBottomSheet(region)))
+    }
+
     func enterBrowseMode() {
         mapMode = .browse
     }
@@ -260,11 +279,11 @@ final class MapViewModel {
 
         if let dest = displayDestinationCoordinate {
             if let region = Self.regionFitting(coordinates: [userCoord, dest], padding: 1.45) {
-                setProgrammaticCamera(.region(region))
+                setProgrammaticCameraToRegion(region)
             }
         } else {
             let span = MKCoordinateSpan(latitudeDelta: 0.025, longitudeDelta: 0.025)
-            setProgrammaticCamera(.region(MKCoordinateRegion(center: userCoord, span: span)))
+            setProgrammaticCameraToRegion(MKCoordinateRegion(center: userCoord, span: span))
         }
     }
 
@@ -605,8 +624,18 @@ final class MapViewModel {
     }
 
     func fitCameraToRoute() {
-        guard let r = currentRoute else { return }
-        fitCameraToRoute(from: r)
+        if let r = currentRoute {
+            fitCameraToRoute(from: r)
+            return
+        }
+        let coords = activeRouteCoordinates
+        guard coords.count >= 2 else {
+            fitCameraToUserAndDestination()
+            return
+        }
+        let polyline = MKPolyline(coordinates: coords, count: coords.count)
+        let region = MKCoordinateRegion(polyline.boundingMapRect)
+        setProgrammaticCameraToRegion(region)
     }
 
     private func fitCameraToRoute(from info: RouteInfo) {
@@ -620,13 +649,13 @@ final class MapViewModel {
         let polyline = MKPolyline(coordinates: coords, count: coords.count)
         let rect = polyline.boundingMapRect
         let region = MKCoordinateRegion(rect)
-        setProgrammaticCamera(.region(region))
+        setProgrammaticCameraToRegion(region)
     }
 
     func fitCameraToUserAndDestination() {
         guard let u = location.latestLocation?.coordinate, let d = displayDestinationCoordinate else { return }
         if let region = Self.regionFitting(coordinates: [u, d], padding: 1.45) {
-            setProgrammaticCamera(.region(region))
+            setProgrammaticCameraToRegion(region)
         }
     }
 
